@@ -50,7 +50,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { title, content, status } = body;
+  const { title, content, status, publish_at } = body;
 
   if (!title || !content) {
     return NextResponse.json(
@@ -60,12 +60,26 @@ export async function POST(request: NextRequest) {
   }
 
   const articleStatus = status || "draft";
+  const validStatuses = ["draft", "published", "scheduled"];
 
-  if (articleStatus !== "draft" && articleStatus !== "published") {
+  if (!validStatuses.includes(articleStatus)) {
     return NextResponse.json(
-      { success: false, error: "status must be 'draft' or 'published'." },
+      { success: false, error: "status must be 'draft', 'published', or 'scheduled'." },
       { status: 400 }
     );
+  }
+
+  if (articleStatus === "scheduled" && !publish_at) {
+    return NextResponse.json(
+      { success: false, error: "publish_at is required when status is 'scheduled'." },
+      { status: 400 }
+    );
+  }
+
+  let articlePublishAt = publish_at || null;
+
+  if (articleStatus === "published" && !articlePublishAt) {
+    articlePublishAt = new Date().toISOString();
   }
 
   const baseSlug = generateSlug(title);
@@ -73,7 +87,7 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await supabase
     .from("articles")
-    .insert({ title, content, slug, status: articleStatus })
+    .insert({ title, content, slug, status: articleStatus, publish_at: articlePublishAt })
     .select()
     .single();
 
