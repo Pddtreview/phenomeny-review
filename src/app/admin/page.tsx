@@ -4,6 +4,15 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 
+const AI_ACTIONS = [
+  { key: "clarity", label: "Clarity" },
+  { key: "aggressive", label: "Aggressive" },
+  { key: "analytical", label: "Analytical" },
+  { key: "summary", label: "Summary" },
+  { key: "twitter", label: "Twitter" },
+  { key: "linkedin", label: "LinkedIn" },
+] as const;
+
 export default function AdminPage() {
   const router = useRouter();
   const [topic, setTopic] = useState("");
@@ -12,6 +21,7 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [editing, setEditing] = useState<string | null>(null);
 
   async function handleGenerate() {
     if (!topic.trim()) return;
@@ -42,6 +52,34 @@ export default function AdminPage() {
     }
   }
 
+  async function handleAiEdit(action: string) {
+    if (!content.trim()) return;
+    setError("");
+    setEditing(action);
+
+    try {
+      const res = await fetch("/api/ai-edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, action }),
+      });
+
+      const json = await res.json();
+
+      if (json.error) {
+        setError(json.error);
+        setEditing(null);
+        return;
+      }
+
+      setContent(json.result);
+      setEditing(null);
+    } catch {
+      setError("AI edit failed.");
+      setEditing(null);
+    }
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
@@ -69,6 +107,8 @@ export default function AdminPage() {
     }
   }
 
+  const isBusy = generating || submitting || !!editing;
+
   return (
     <main className={styles.main}>
       <h1 className={styles.heading}>New Article</h1>
@@ -85,7 +125,7 @@ export default function AdminPage() {
           className={styles.generateButton}
           type="button"
           onClick={handleGenerate}
-          disabled={generating || !topic.trim()}
+          disabled={isBusy || !topic.trim()}
         >
           {generating ? "Generating…" : "Generate with AI"}
         </button>
@@ -113,8 +153,26 @@ export default function AdminPage() {
             required
           />
         </div>
+
+        <div className={styles.editSection}>
+          <span className={styles.editLabel}>AI Edit:</span>
+          <div className={styles.editButtons}>
+            {AI_ACTIONS.map(({ key, label }) => (
+              <button
+                key={key}
+                className={styles.editButton}
+                type="button"
+                onClick={() => handleAiEdit(key)}
+                disabled={isBusy || !content.trim()}
+              >
+                {editing === key ? "…" : label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {error && <p className={styles.error}>{error}</p>}
-        <button className={styles.button} type="submit" disabled={submitting}>
+        <button className={styles.button} type="submit" disabled={isBusy}>
           {submitting ? "Submitting…" : "Submit"}
         </button>
       </form>
