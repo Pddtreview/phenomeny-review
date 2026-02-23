@@ -17,6 +17,12 @@
       "static/chunks/main-app.js",
       "static/css/app/admin/login/page.css",
       "static/chunks/app/admin/login/page.js"
+    ],
+    "/admin/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/admin/page.css",
+      "static/chunks/app/admin/page.js"
     ]
   }
 }

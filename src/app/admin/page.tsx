@@ -40,7 +40,7 @@ export default function AdminPage() {
 
   const fetchArticles = useCallback(async () => {
     try {
-      const res = await fetch("/api/articles");
+      const res = await fetch("/api/admin/articles");
       const json = await res.json();
       if (json.success && json.data) {
         setArticles(json.data);
