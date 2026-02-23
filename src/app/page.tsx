@@ -9,6 +9,7 @@ interface Article {
   id: string;
   title: string;
   content: string;
+  slug: string;
   created_at: string;
 }
 
@@ -41,7 +42,7 @@ export default async function HomePage() {
         <ul className={styles.list}>
           {data.map((article) => (
             <li key={article.id} className={styles.item}>
-              <Link href={`/articles/${article.id}`} className={styles.link}>
+              <Link href={`/articles/${article.slug}`} className={styles.link}>
                 <h2 className={styles.itemTitle}>{article.title}</h2>
                 <p className={styles.snippet}>
                   {article.content.length > 150

@@ -6,14 +6,14 @@ import styles from "./page.module.css";
 export const dynamic = "force-dynamic";
 
 interface ArticlePageProps {
-  params: { id: string };
+  params: { slug: string };
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { data, error } = await supabase
     .from("articles")
     .select("*")
-    .eq("id", params.id)
+    .eq("slug", params.slug)
     .single();
 
   if (error || !data) {
