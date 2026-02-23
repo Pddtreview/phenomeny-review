@@ -1,8 +1,8 @@
-// File: /home/runner/workspace/src/app/robots.txt/route.ts
-import * as entry from '../../../../src/app/robots.txt/route.js'
+// File: /home/runner/workspace/src/app/api/admin/login/route.ts
+import * as entry from '../../../../../../src/app/api/admin/login/route.js'
 import type { NextRequest } from 'next/server.js'
 
-type TEntry = typeof import('../../../../src/app/robots.txt/route.js')
+type TEntry = typeof import('../../../../../../src/app/api/admin/login/route.js')
 
 // Check that the entry is a valid entry
 checkFields<Diff<{
