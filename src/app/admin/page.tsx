@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import styles from "./page.module.css";
 
 const AI_ACTIONS = [
@@ -340,6 +341,9 @@ export default function AdminPage() {
                   </span>
                 </div>
                 <div className={styles.articleActions}>
+                  <Link href={`/admin/edit/${article.id}`} className={styles.actionButton}>
+                    Edit
+                  </Link>
                   <button
                     className={styles.actionButton}
                     type="button"

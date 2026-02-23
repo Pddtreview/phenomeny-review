@@ -17,18 +17,44 @@ export async function PATCH(
   }
 
   const body = await request.json();
-  const { status } = body;
+  const { title, content, status, publish_at } = body;
 
-  if (!status || (status !== "draft" && status !== "published")) {
+  const validStatuses = ["draft", "published", "scheduled"];
+
+  if (status && !validStatuses.includes(status)) {
     return NextResponse.json(
-      { error: "status must be 'draft' or 'published'." },
+      { error: "status must be 'draft', 'published', or 'scheduled'." },
+      { status: 400 }
+    );
+  }
+
+  if (status === "scheduled" && !publish_at) {
+    return NextResponse.json(
+      { error: "publish_at is required when status is 'scheduled'." },
+      { status: 400 }
+    );
+  }
+
+  const updates: Record<string, any> = {};
+  if (title !== undefined) updates.title = title;
+  if (content !== undefined) updates.content = content;
+  if (status !== undefined) updates.status = status;
+  if (publish_at !== undefined) updates.publish_at = publish_at;
+
+  if (status === "published" && !publish_at) {
+    updates.publish_at = new Date().toISOString();
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json(
+      { error: "No fields to update." },
       { status: 400 }
     );
   }
 
   const { data, error } = await supabase
     .from("articles")
-    .update({ status })
+    .update(updates)
     .eq("id", params.id)
     .select()
     .single();
