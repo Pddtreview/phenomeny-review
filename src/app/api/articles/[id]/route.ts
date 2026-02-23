@@ -17,7 +17,7 @@ export async function PATCH(
   }
 
   const body = await request.json();
-  const { title, content, status, publish_at } = body;
+  const { title, content, status, publish_at, category } = body;
 
   const validStatuses = ["draft", "published", "scheduled"];
 
@@ -40,6 +40,7 @@ export async function PATCH(
   if (content !== undefined) updates.content = content;
   if (status !== undefined) updates.status = status;
   if (publish_at !== undefined) updates.publish_at = publish_at;
+  if (category !== undefined) updates.category = category;
 
   if (status === "published" && !publish_at) {
     updates.publish_at = new Date().toISOString();

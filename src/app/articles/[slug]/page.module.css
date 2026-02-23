@@ -1,36 +1,55 @@
 .main {
-  max-width: 640px;
+  max-width: 660px;
   margin: 0 auto;
-  padding: 3rem 2rem;
+  padding: 3rem 2rem 4rem;
 }
 
 .back {
   display: inline-block;
-  font-size: 0.875rem;
-  color: #666;
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: #1E0E6F;
   text-decoration: none;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  transition: color 0.15s;
 }
 
 .back:hover {
-  color: #111;
+  color: #19C39C;
+}
+
+.category {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #19C39C;
+  background: rgba(25, 195, 156, 0.1);
+  padding: 0.2rem 0.7rem;
+  border-radius: 9999px;
+  margin-bottom: 0.75rem;
 }
 
 .title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.date {
+  display: block;
+  font-size: 0.8rem;
+  color: #9CA3AF;
+  margin-bottom: 2rem;
 }
 
 .content {
-  font-size: 1rem;
-  line-height: 1.75;
-  color: #333;
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: #374151;
   white-space: pre-wrap;
-}
-
-.error {
-  color: #cf222e;
-  font-size: 0.925rem;
 }

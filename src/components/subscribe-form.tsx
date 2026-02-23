@@ -38,7 +38,9 @@ export default function SubscribeForm() {
   }
 
   return (
-    <div>
+    <div className={styles.wrapper}>
+      <h3 className={styles.heading}>The Intelligence Brief</h3>
+      <p className={styles.subtext}>Weekly AI & tech digest. No noise — only signal.</p>
       <form className={styles.form} onSubmit={handleSubmit}>
         <input
           className={styles.input}

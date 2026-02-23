@@ -67,7 +67,17 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   return (
     <main className={styles.main}>
       <Link href="/" className={styles.back}>← Back to articles</Link>
+      {article.category && (
+        <span className={styles.category}>{article.category}</span>
+      )}
       <h1 className={styles.title}>{article.title}</h1>
+      <time className={styles.date}>
+        {new Date(article.publish_at || article.created_at).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}
+      </time>
       <div className={styles.content}>{article.content}</div>
     </main>
   );

@@ -71,7 +71,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { title, content, status, publish_at } = body;
+  const { title, content, status, publish_at, category } = body;
 
   if (!title || !content) {
     return NextResponse.json(
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await supabase
     .from("articles")
-    .insert({ title, content, slug, status: articleStatus, publish_at: articlePublishAt })
+    .insert({ title, content, slug, status: articleStatus, publish_at: articlePublishAt, category: category || null })
     .select()
     .single();
 

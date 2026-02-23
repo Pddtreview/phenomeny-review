@@ -1,4 +1,5 @@
-import Link from "next/link";
+import Image from "next/image";
+import ArticleFeed from "@/components/article-feed";
 import SubscribeForm from "@/components/subscribe-form";
 import styles from "./page.module.css";
 
@@ -9,7 +10,9 @@ interface Article {
   title: string;
   content: string;
   slug: string;
+  category: string | null;
   created_at: string;
+  publish_at: string | null;
 }
 
 async function fetchArticles(): Promise<{ data: Article[] | null; error: string | null }> {
@@ -35,31 +38,45 @@ export default async function HomePage() {
 
   return (
     <main className={styles.main}>
-      <h1 className={styles.title}>Phenomeny Review™</h1>
-      <p className={styles.description}>AI-powered editorial platform</p>
+      <header className={styles.header}>
+        <Image
+          src="/images/logo.png"
+          alt="Phenomeny Review"
+          width={56}
+          height={56}
+          className={styles.logo}
+          priority
+        />
+        <div>
+          <h1 className={styles.title}>Phenomeny Review™</h1>
+          <p className={styles.subtitle}>AI-Powered Editorial Intelligence</p>
+        </div>
+      </header>
+
+      <section className={styles.hero}>
+        <h2 className={styles.heroTitle}>
+          The editorial lens on AI, quantum, space & geopolitics.
+        </h2>
+        <p className={styles.heroDescription}>
+          Deep analysis meets AI-augmented insight. Published for decision-makers who read before they act.
+        </p>
+      </section>
 
       {error ? (
         <p className={styles.error}>{error}</p>
       ) : !data || data.length === 0 ? (
-        <p className={styles.empty}>No articles yet</p>
+        <p className={styles.empty}>No articles published yet. Check back soon.</p>
       ) : (
-        <ul className={styles.list}>
-          {data.map((article) => (
-            <li key={article.id} className={styles.item}>
-              <Link href={`/articles/${article.slug}`} className={styles.link}>
-                <h2 className={styles.itemTitle}>{article.title}</h2>
-                <p className={styles.snippet}>
-                  {article.content.length > 150
-                    ? article.content.slice(0, 150) + "…"
-                    : article.content}
-                </p>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <ArticleFeed articles={data} />
       )}
 
       <SubscribeForm />
+
+      <footer className={styles.footer}>
+        <span>© {new Date().getFullYear()} Phenomeny Review™</span>
+        <span className={styles.footerDot}>·</span>
+        <span>All rights reserved</span>
+      </footer>
     </main>
   );
 }

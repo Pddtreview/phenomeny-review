@@ -20,6 +20,7 @@ interface Article {
   slug: string;
   status: string;
   publish_at: string | null;
+  category: string | null;
   created_at: string;
 }
 
@@ -32,6 +33,7 @@ export default function EditArticlePage() {
   const [content, setContent] = useState("");
   const [status, setStatus] = useState("draft");
   const [publishAt, setPublishAt] = useState("");
+  const [category, setCategory] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
@@ -49,6 +51,7 @@ export default function EditArticlePage() {
             setTitle(article.title);
             setContent(article.content);
             setStatus(article.status);
+            setCategory(article.category || "");
             if (article.publish_at) {
               const dt = new Date(article.publish_at);
               const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
@@ -111,6 +114,7 @@ export default function EditArticlePage() {
           title,
           content,
           status,
+          category: category || null,
           ...(status === "scheduled" && publishAt
             ? { publish_at: new Date(publishAt).toISOString() }
             : status === "published"
@@ -186,6 +190,27 @@ export default function EditArticlePage() {
               </button>
             ))}
           </div>
+        </div>
+
+        <div>
+          <label className={styles.label} htmlFor="category">Category</label>
+          <select
+            id="category"
+            className={styles.select}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="">— None —</option>
+            <option value="AI">AI</option>
+            <option value="AI Governance">AI Governance</option>
+            <option value="AI Operations">AI Operations</option>
+            <option value="Quantum">Quantum</option>
+            <option value="Space">Space</option>
+            <option value="Biotech">Biotech</option>
+            <option value="India–China">India–China</option>
+            <option value="USA Europe">USA Europe</option>
+            <option value="Intelligence Brief">Intelligence Brief</option>
+          </select>
         </div>
 
         <div>

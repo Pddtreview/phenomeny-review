@@ -20,6 +20,7 @@ interface Article {
   content: string;
   slug: string;
   status: string;
+  category: string | null;
   created_at: string;
   publish_at: string | null;
 }
@@ -35,6 +36,7 @@ export default function AdminPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [status, setStatus] = useState("draft");
   const [publishAt, setPublishAt] = useState("");
+  const [category, setCategory] = useState("");
 
   const [articles, setArticles] = useState<Article[]>([]);
   const [loadingArticles, setLoadingArticles] = useState(true);
@@ -133,6 +135,7 @@ export default function AdminPage() {
           title,
           content,
           status,
+          category: category || null,
           ...(status === "scheduled" && publishAt
             ? { publish_at: new Date(publishAt).toISOString() }
             : {}),
@@ -151,6 +154,7 @@ export default function AdminPage() {
       setContent("");
       setStatus("draft");
       setPublishAt("");
+      setCategory("");
       setTopic("");
       setSubmitting(false);
       fetchArticles();
@@ -282,6 +286,27 @@ export default function AdminPage() {
         </div>
 
         <div>
+          <label className={styles.label} htmlFor="category">Category</label>
+          <select
+            id="category"
+            className={styles.select}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="">— None —</option>
+            <option value="AI">AI</option>
+            <option value="AI Governance">AI Governance</option>
+            <option value="AI Operations">AI Operations</option>
+            <option value="Quantum">Quantum</option>
+            <option value="Space">Space</option>
+            <option value="Biotech">Biotech</option>
+            <option value="India–China">India–China</option>
+            <option value="USA Europe">USA Europe</option>
+            <option value="Intelligence Brief">Intelligence Brief</option>
+          </select>
+        </div>
+
+        <div>
           <label className={styles.label} htmlFor="status">Status</label>
           <select
             id="status"
@@ -327,6 +352,9 @@ export default function AdminPage() {
               <li key={article.id} className={styles.articleItem}>
                 <div className={styles.articleInfo}>
                   <span className={styles.articleTitle}>{article.title}</span>
+                  {article.category && (
+                    <span className={styles.badgeCategory}>{article.category}</span>
+                  )}
                   <span
                     className={
                       article.status === "published"

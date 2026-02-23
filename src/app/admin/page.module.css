@@ -205,7 +205,8 @@
 }
 
 .badgeDraft,
-.badgePublished {
+.badgePublished,
+.badgeCategory {
   font-size: 0.7rem;
   font-weight: 600;
   padding: 0.15rem 0.5rem;
@@ -223,6 +224,11 @@
 .badgePublished {
   color: #166534;
   background: #dcfce7;
+}
+
+.badgeCategory {
+  color: #1E0E6F;
+  background: #ede9fe;
 }
 
 .articleDate {

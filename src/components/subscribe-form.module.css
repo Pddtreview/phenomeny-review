@@ -1,36 +1,66 @@
+.wrapper {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 3rem;
+  background: linear-gradient(135deg, #1E0E6F 0%, #2a1a8a 100%);
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+}
+
+.heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.25rem;
+}
+
+.subtext {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 1.25rem;
+}
+
 .form {
   display: flex;
   gap: 0.5rem;
-  width: 100%;
-  max-width: 420px;
-  margin-top: 2.5rem;
 }
 
 .input {
   flex: 1;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.925rem;
-  border: 1px solid #d0d0d0;
-  border-radius: 6px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
   font-family: inherit;
   outline: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .input:focus {
-  border-color: #111;
+  border-color: #19C39C;
 }
 
 .button {
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 600;
   color: #fff;
-  background: #111;
+  background: #19C39C;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-family: inherit;
   white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.button:hover {
+  background: #15a886;
 }
 
 .button:disabled {
@@ -41,13 +71,12 @@
 .message {
   margin-top: 0.5rem;
   font-size: 0.825rem;
-  text-align: center;
 }
 
 .success {
-  color: #1a7f37;
+  color: #19C39C;
 }
 
 .error {
-  color: #cf222e;
+  color: #f87171;
 }
