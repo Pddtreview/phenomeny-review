@@ -22,6 +22,7 @@ export default function AdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
+  const [status, setStatus] = useState("draft");
 
   async function handleGenerate() {
     if (!topic.trim()) return;
@@ -89,7 +90,7 @@ export default function AdminPage() {
       const res = await fetch("/api/articles", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({ title, content, status }),
       });
 
       const json = await res.json();
@@ -169,6 +170,19 @@ export default function AdminPage() {
               </button>
             ))}
           </div>
+        </div>
+
+        <div>
+          <label className={styles.label} htmlFor="status">Status</label>
+          <select
+            id="status"
+            className={styles.select}
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+          >
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+          </select>
         </div>
 
         {error && <p className={styles.error}>{error}</p>}
