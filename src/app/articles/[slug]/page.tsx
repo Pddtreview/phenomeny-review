@@ -32,14 +32,22 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     ? article.content.slice(0, 160) + "…"
     : article.content;
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+    || (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : "http://localhost:5000");
+
   return {
+    metadataBase: new URL(baseUrl),
     title: `${article.title} | Phenomeny Review™`,
     description,
+    alternates: {
+      canonical: `/articles/${params.slug}`,
+    },
     openGraph: {
       title: article.title,
       description,
       type: "article",
       siteName: "Phenomeny Review™",
+      url: `/articles/${params.slug}`,
     },
     twitter: {
       card: "summary_large_image",
