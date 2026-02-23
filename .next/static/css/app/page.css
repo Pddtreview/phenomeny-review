@@ -4,6 +4,21 @@
 .page_main__GlU4n {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   min-height: 100vh;
+  padding: 2rem;
+}
+
+.page_title__3jonF {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.page_description__86bsR {
+  font-size: 1rem;
+  color: #666;
 }
 
