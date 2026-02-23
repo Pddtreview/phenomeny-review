@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabase } from "@/lib/supabase";
 
 function checkAuth(request: NextRequest): boolean {
@@ -39,6 +40,8 @@ export async function PATCH(
   if (!data) {
     return NextResponse.json({ error: "Article not found." }, { status: 404 });
   }
+
+  revalidatePath("/");
 
   return NextResponse.json({ success: true, data });
 }
