@@ -36,15 +36,34 @@ async function getUniqueSlug(baseSlug: string): Promise<string> {
 }
 
 export async function GET() {
+  const nowISO = new Date().toISOString();
+
   const { data, error } = await supabase
     .from("articles")
     .select("*")
     .or("status.eq.published,status.eq.scheduled")
-    .lte("publish_at", new Date().toISOString())
+    .lte("publish_at", nowISO)
     .order("publish_at", { ascending: false });
 
   if (error) {
     return NextResponse.json({ success: false, error: error.message });
+  }
+
+  const dueScheduled = (data || []).filter((a) => a.status === "scheduled");
+
+  if (dueScheduled.length > 0) {
+    const ids = dueScheduled.map((a) => a.id);
+
+    await supabase
+      .from("articles")
+      .update({ status: "published" })
+      .in("id", ids);
+
+    for (const article of data || []) {
+      if (article.status === "scheduled") {
+        article.status = "published";
+      }
+    }
   }
 
   return NextResponse.json({ success: true, data });
