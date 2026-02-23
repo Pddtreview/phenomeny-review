@@ -32,6 +32,7 @@ export default function AdminPage() {
   const [generating, setGenerating] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
   const [status, setStatus] = useState("draft");
+  const [publishAt, setPublishAt] = useState("");
 
   const [articles, setArticles] = useState<Article[]>([]);
   const [loadingArticles, setLoadingArticles] = useState(true);
@@ -120,7 +121,14 @@ export default function AdminPage() {
       const res = await fetch("/api/articles", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content, status }),
+        body: JSON.stringify({
+          title,
+          content,
+          status,
+          ...(status === "scheduled" && publishAt
+            ? { publish_at: new Date(publishAt).toISOString() }
+            : {}),
+        }),
       });
 
       const json = await res.json();
@@ -134,6 +142,7 @@ export default function AdminPage() {
       setTitle("");
       setContent("");
       setStatus("draft");
+      setPublishAt("");
       setTopic("");
       setSubmitting(false);
       fetchArticles();
@@ -257,8 +266,23 @@ export default function AdminPage() {
           >
             <option value="draft">Draft</option>
             <option value="published">Published</option>
+            <option value="scheduled">Scheduled</option>
           </select>
         </div>
+
+        {status === "scheduled" && (
+          <div>
+            <label className={styles.label} htmlFor="publishAt">Publish At</label>
+            <input
+              id="publishAt"
+              className={styles.input}
+              type="datetime-local"
+              value={publishAt}
+              onChange={(e) => setPublishAt(e.target.value)}
+              required
+            />
+          </div>
+        )}
 
         {error && <p className={styles.error}>{error}</p>}
         <button className={styles.button} type="submit" disabled={isBusy}>
