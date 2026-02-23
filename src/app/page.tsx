@@ -16,7 +16,7 @@ interface Article {
 async function fetchArticles(): Promise<{ data: Article[] | null; error: string | null }> {
   const { data, error } = await supabase
     .from("articles")
-    .select("*")
+    .select("*", { count: "exact" })
     .order("created_at", { ascending: false });
 
   if (error) {
