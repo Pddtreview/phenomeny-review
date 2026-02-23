@@ -39,7 +39,9 @@ export async function GET() {
   const { data, error } = await supabase
     .from("articles")
     .select("*")
-    .order("created_at", { ascending: false });
+    .or("status.eq.published,status.eq.scheduled")
+    .lte("publish_at", new Date().toISOString())
+    .order("publish_at", { ascending: false });
 
   if (error) {
     return NextResponse.json({ success: false, error: error.message });
