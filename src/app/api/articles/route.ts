@@ -50,11 +50,20 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { title, content } = body;
+  const { title, content, status } = body;
 
   if (!title || !content) {
     return NextResponse.json(
       { success: false, error: "title and content are required." },
+      { status: 400 }
+    );
+  }
+
+  const articleStatus = status || "draft";
+
+  if (articleStatus !== "draft" && articleStatus !== "published") {
+    return NextResponse.json(
+      { success: false, error: "status must be 'draft' or 'published'." },
       { status: 400 }
     );
   }
@@ -64,7 +73,7 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await supabase
     .from("articles")
-    .insert({ title, content, slug })
+    .insert({ title, content, slug, status: articleStatus })
     .select()
     .single();
 
