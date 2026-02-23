@@ -20,5 +20,26 @@
 .page_description__86bsR {
   font-size: 1rem;
   color: #666;
+  margin-bottom: 2rem;
+}
+
+.page_status___nccx {
+  margin-top: 1rem;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background: #fafafa;
+  max-width: 480px;
+  text-align: center;
+}
+
+.page_success__Xb9nl {
+  color: #1a7f37;
+  font-size: 0.925rem;
+}
+
+.page_error__Jil8M {
+  color: #cf222e;
+  font-size: 0.925rem;
 }
 
