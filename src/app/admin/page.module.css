@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   min-height: 100vh;
   padding: 2rem;
 }
@@ -148,4 +147,134 @@
 .error {
   color: #cf222e;
   font-size: 0.875rem;
+}
+
+.articlesSection {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 2.5rem;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1.5rem;
+}
+
+.articlesHeading {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.articlesEmpty {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.articlesList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.articleItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.articleInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.articleTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.badgeDraft,
+.badgePublished {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.badgeDraft {
+  color: #92600a;
+  background: #fef3c7;
+}
+
+.badgePublished {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.articleDate {
+  font-size: 0.75rem;
+  color: #888;
+  flex-shrink: 0;
+}
+
+.articleActions {
+  display: flex;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+.actionButton {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #333;
+  background: #f0f0f0;
+  border: 1px solid #d0d0d0;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.actionButton:hover:not(:disabled) {
+  background: #e4e4e4;
+}
+
+.actionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.deleteButton {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #cf222e;
+  background: #fff;
+  border: 1px solid #f0c0c0;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+.deleteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

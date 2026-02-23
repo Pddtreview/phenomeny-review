@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, useEffect, useCallback, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 
@@ -13,6 +13,15 @@ const AI_ACTIONS = [
   { key: "linkedin", label: "LinkedIn" },
 ] as const;
 
+interface Article {
+  id: string;
+  title: string;
+  content: string;
+  slug: string;
+  status: string;
+  created_at: string;
+}
+
 export default function AdminPage() {
   const router = useRouter();
   const [topic, setTopic] = useState("");
@@ -23,6 +32,27 @@ export default function AdminPage() {
   const [generating, setGenerating] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
   const [status, setStatus] = useState("draft");
+
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loadingArticles, setLoadingArticles] = useState(true);
+  const [busyArticleId, setBusyArticleId] = useState<string | null>(null);
+
+  const fetchArticles = useCallback(async () => {
+    try {
+      const res = await fetch("/api/articles");
+      const json = await res.json();
+      if (json.success && json.data) {
+        setArticles(json.data);
+      }
+    } catch {
+    } finally {
+      setLoadingArticles(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchArticles();
+  }, [fetchArticles]);
 
   async function handleGenerate() {
     if (!topic.trim()) return;
@@ -101,10 +131,55 @@ export default function AdminPage() {
         return;
       }
 
-      router.push("/");
+      setTitle("");
+      setContent("");
+      setStatus("draft");
+      setTopic("");
+      setSubmitting(false);
+      fetchArticles();
     } catch {
       setError("Failed to submit article.");
       setSubmitting(false);
+    }
+  }
+
+  async function handleToggleStatus(article: Article) {
+    const newStatus = article.status === "published" ? "draft" : "published";
+    setBusyArticleId(article.id);
+
+    try {
+      const res = await fetch(`/api/articles/${article.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      const json = await res.json();
+
+      if (json.success) {
+        setArticles((prev) =>
+          prev.map((a) => (a.id === article.id ? { ...a, status: newStatus } : a))
+        );
+      }
+    } catch {
+    } finally {
+      setBusyArticleId(null);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    setBusyArticleId(id);
+
+    try {
+      const res = await fetch(`/api/articles/${id}`, { method: "DELETE" });
+      const json = await res.json();
+
+      if (json.success) {
+        setArticles((prev) => prev.filter((a) => a.id !== id));
+      }
+    } catch {
+    } finally {
+      setBusyArticleId(null);
     }
   }
 
@@ -190,6 +265,55 @@ export default function AdminPage() {
           {submitting ? "Submitting…" : "Submit"}
         </button>
       </form>
+
+      <section className={styles.articlesSection}>
+        <h2 className={styles.articlesHeading}>All Articles</h2>
+        {loadingArticles ? (
+          <p className={styles.articlesEmpty}>Loading…</p>
+        ) : articles.length === 0 ? (
+          <p className={styles.articlesEmpty}>No articles yet.</p>
+        ) : (
+          <ul className={styles.articlesList}>
+            {articles.map((article) => (
+              <li key={article.id} className={styles.articleItem}>
+                <div className={styles.articleInfo}>
+                  <span className={styles.articleTitle}>{article.title}</span>
+                  <span
+                    className={
+                      article.status === "published"
+                        ? styles.badgePublished
+                        : styles.badgeDraft
+                    }
+                  >
+                    {article.status}
+                  </span>
+                  <span className={styles.articleDate}>
+                    {new Date(article.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className={styles.articleActions}>
+                  <button
+                    className={styles.actionButton}
+                    type="button"
+                    onClick={() => handleToggleStatus(article)}
+                    disabled={busyArticleId === article.id}
+                  >
+                    {article.status === "draft" ? "Publish" : "Unpublish"}
+                  </button>
+                  <button
+                    className={styles.deleteButton}
+                    type="button"
+                    onClick={() => handleDelete(article.id)}
+                    disabled={busyArticleId === article.id}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </main>
   );
 }
