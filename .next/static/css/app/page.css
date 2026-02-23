@@ -71,3 +71,60 @@
   line-height: 1.5;
 }
 
+/*!************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[3]!./src/components/subscribe-form.module.css ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************/
+.subscribe-form_form__8xRco {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 2.5rem;
+}
+
+.subscribe-form_input__0fC_A {
+  flex: 1 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.925rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-family: inherit;
+  outline: none;
+}
+
+.subscribe-form_input__0fC_A:focus {
+  border-color: #111;
+}
+
+.subscribe-form_button__Hd5Vv {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  background: #111;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.subscribe-form_button__Hd5Vv:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.subscribe-form_message__NMAaP {
+  margin-top: 0.5rem;
+  font-size: 0.825rem;
+  text-align: center;
+}
+
+.subscribe-form_success__W5GB4 {
+  color: #1a7f37;
+}
+
+.subscribe-form_error__Hx28_ {
+  color: #cf222e;
+}
+

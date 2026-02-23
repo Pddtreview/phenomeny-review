@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import SubscribeForm from "@/components/subscribe-form";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -52,6 +53,8 @@ export default async function HomePage() {
           ))}
         </ul>
       )}
+
+      <SubscribeForm />
     </main>
   );
 }

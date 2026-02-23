@@ -1,0 +1,53 @@
+.form {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 2.5rem;
+}
+
+.input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.925rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-family: inherit;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #111;
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  background: #111;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.message {
+  margin-top: 0.5rem;
+  font-size: 0.825rem;
+  text-align: center;
+}
+
+.success {
+  color: #1a7f37;
+}
+
+.error {
+  color: #cf222e;
+}
