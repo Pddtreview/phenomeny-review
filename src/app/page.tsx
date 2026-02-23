@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
 import SubscribeForm from "@/components/subscribe-form";
 import styles from "./page.module.css";
 
@@ -14,16 +13,21 @@ interface Article {
 }
 
 async function fetchArticles(): Promise<{ data: Article[] | null; error: string | null }> {
-  const { data, error } = await supabase
-    .from("articles")
-    .select("*", { count: "exact" })
-    .order("created_at", { ascending: false });
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+    || (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : "http://localhost:5000");
 
-  if (error) {
-    return { data: null, error: error.message };
+  try {
+    const res = await fetch(`${baseUrl}/api/articles`, { cache: "no-store" });
+    const json = await res.json();
+
+    if (!json.success) {
+      return { data: null, error: json.error || "Failed to fetch articles." };
+    }
+
+    return { data: json.data, error: null };
+  } catch (err: any) {
+    return { data: null, error: err?.message || "Failed to fetch articles." };
   }
-
-  return { data, error: null };
 }
 
 export default async function HomePage() {
