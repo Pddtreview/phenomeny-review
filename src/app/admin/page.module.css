@@ -278,3 +278,22 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.scheduledItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #d4c8f0;
+  border-radius: 6px;
+  background: #f8f5ff;
+}
+
+.countdown {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #4a3f8a;
+  white-space: nowrap;
+  flex-shrink: 0;
+}

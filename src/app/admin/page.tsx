@@ -20,6 +20,7 @@ interface Article {
   slug: string;
   status: string;
   created_at: string;
+  publish_at: string | null;
 }
 
 export default function AdminPage() {
@@ -37,6 +38,7 @@ export default function AdminPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loadingArticles, setLoadingArticles] = useState(true);
   const [busyArticleId, setBusyArticleId] = useState<string | null>(null);
+  const [now, setNow] = useState(() => Date.now());
 
   const fetchArticles = useCallback(async () => {
     try {
@@ -54,6 +56,11 @@ export default function AdminPage() {
   useEffect(() => {
     fetchArticles();
   }, [fetchArticles]);
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   async function handleGenerate() {
     if (!topic.trim()) return;
@@ -190,6 +197,23 @@ export default function AdminPage() {
     } finally {
       setBusyArticleId(null);
     }
+  }
+
+  const scheduledArticles = articles
+    .filter((a) => a.status === "scheduled" && a.publish_at && new Date(a.publish_at).getTime() > now)
+    .sort((a, b) => new Date(a.publish_at!).getTime() - new Date(b.publish_at!).getTime());
+
+  function formatCountdown(publishAt: string): string {
+    const diff = new Date(publishAt).getTime() - now;
+    if (diff <= 0) return "Publishing soon…";
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0) parts.push(`${hours}h`);
+    parts.push(`${mins}m`);
+    return parts.join(" ");
   }
 
   const isBusy = generating || submitting || !!editing;
@@ -333,6 +357,29 @@ export default function AdminPage() {
                     Delete
                   </button>
                 </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className={styles.articlesSection}>
+        <h2 className={styles.articlesHeading}>Upcoming Scheduled Articles</h2>
+        {scheduledArticles.length === 0 ? (
+          <p className={styles.articlesEmpty}>No upcoming scheduled articles.</p>
+        ) : (
+          <ul className={styles.articlesList}>
+            {scheduledArticles.map((article) => (
+              <li key={article.id} className={styles.scheduledItem}>
+                <div className={styles.articleInfo}>
+                  <span className={styles.articleTitle}>{article.title}</span>
+                  <span className={styles.articleDate}>
+                    {new Date(article.publish_at!).toLocaleString()}
+                  </span>
+                </div>
+                <span className={styles.countdown}>
+                  {formatCountdown(article.publish_at!)}
+                </span>
               </li>
             ))}
           </ul>
