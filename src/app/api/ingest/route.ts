@@ -516,11 +516,40 @@ export async function POST(request: NextRequest) {
       "other"
     ];
 
-    if (parsed.timeline_event && parsed.timeline_event.entity) {
-      let eventType = parsed.timeline_event.event_type || "other";
-      if (!ALLOWED_EVENT_TYPES.includes(eventType)) {
-        eventType = "other";
+    const EVENT_TYPE_KEYWORD_MAP: [string, string][] = [
+      ["release", "release"],
+      ["launch", "release"],
+      ["upgrade", "upgrade"],
+      ["update", "upgrade"],
+      ["security", "security"],
+      ["breach", "security"],
+      ["regulation", "regulation"],
+      ["policy", "regulation"],
+      ["government", "regulation"],
+      ["funding", "funding"],
+      ["investment", "funding"],
+      ["partnership", "partnership"],
+      ["collaboration", "partnership"],
+      ["leadership", "leadership"],
+      ["ceo", "leadership"],
+      ["research", "research"],
+      ["paper", "research"],
+      ["infrastructure", "infrastructure"],
+      ["data center", "infrastructure"],
+    ];
+
+    function normalizeEventType(raw: string | undefined): string {
+      if (!raw) return "other";
+      const lower = raw.toLowerCase().trim();
+      if (ALLOWED_EVENT_TYPES.includes(lower)) return lower;
+      for (const [keyword, mapped] of EVENT_TYPE_KEYWORD_MAP) {
+        if (lower.includes(keyword)) return mapped;
       }
+      return "other";
+    }
+
+    if (parsed.timeline_event && parsed.timeline_event.entity) {
+      const eventType = normalizeEventType(parsed.timeline_event.event_type);
 
       const { error: timelineError } = await supabase
         .from("timelines")
