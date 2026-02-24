@@ -173,6 +173,8 @@ export default async function EntityPage({ params }: EntityPageProps) {
     mostRecentActivity: string | null;
   } | null = null;
 
+  let crossCompanyExposure: { id: string; name: string; slug: string; frequency: number }[] = [];
+
   if (isCompany && evolution.length > 0) {
     const modelIds = evolution.map((m: any) => m.id);
     const allEntityIds = [entity.id, ...modelIds];
@@ -212,6 +214,44 @@ export default async function EntityPage({ params }: EntityPageProps) {
     };
   }
 
+  if (isCompany) {
+    const { data: companyArticleLinks } = await supabase
+      .from("article_entities")
+      .select("article_id")
+      .eq("entity_id", entity.id);
+
+    if (companyArticleLinks && companyArticleLinks.length > 0) {
+      const articleIds = companyArticleLinks.map((r: any) => r.article_id);
+
+      const { data: coEntities } = await supabase
+        .from("article_entities")
+        .select("entity_id")
+        .in("article_id", articleIds)
+        .neq("entity_id", entity.id);
+
+      if (coEntities && coEntities.length > 0) {
+        const freqMap: Record<string, number> = {};
+        for (const row of coEntities) {
+          freqMap[row.entity_id] = (freqMap[row.entity_id] || 0) + 1;
+        }
+
+        const coEntityIds = Object.keys(freqMap);
+
+        const { data: coCompanies } = await supabase
+          .from("entities")
+          .select("id, name, slug")
+          .in("id", coEntityIds)
+          .eq("type", "company");
+
+        if (coCompanies) {
+          crossCompanyExposure = coCompanies
+            .map((c: any) => ({ ...c, frequency: freqMap[c.id] || 0 }))
+            .sort((a: any, b: any) => b.frequency - a.frequency);
+        }
+      }
+    }
+  }
+
   return (
     <main className={styles.main}>
       <script
@@ -248,6 +288,24 @@ export default async function EntityPage({ params }: EntityPageProps) {
                 <span className={styles.snapshotLabel}>Most Recent Activity</span>
               </div>
             )}
+          </div>
+        </section>
+      )}
+
+      {crossCompanyExposure.length > 0 && (
+        <section className={styles.exposureSection}>
+          <h2 className={styles.sectionHeading}>Frequently Appears With</h2>
+          <div className={styles.exposureList}>
+            {crossCompanyExposure.map((co: any) => (
+              <Link
+                key={co.id}
+                href={`/entities/${co.slug}`}
+                className={styles.exposureItem}
+              >
+                <span className={styles.exposureName}>{co.name}</span>
+                <span className={styles.exposureBadge}>{co.frequency}</span>
+              </Link>
+            ))}
           </div>
         </section>
       )}

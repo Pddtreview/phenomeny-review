@@ -138,6 +138,51 @@
   }
 }
 
+.exposureSection {
+  margin-bottom: 2.5rem;
+}
+
+.exposureList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.exposureItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.85rem;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.exposureItem:hover {
+  border-color: #1E0E6F;
+  background: #F5F3FF;
+}
+
+.exposureName {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1E0E6F;
+}
+
+.exposureBadge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  background: #19C39C;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+  min-width: 1.2rem;
+  text-align: center;
+  line-height: 1.4;
+}
+
 .ecosystemParent {
   font-size: 0.925rem;
   color: #6B7280;
