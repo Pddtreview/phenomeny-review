@@ -191,51 +191,64 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
         {ready && graph && graph.edges.map((e) => {
           const targetNode = graph.nodes.find(n => n.id === e.target);
           const isModel = targetNode?.type === "model";
+          const isConnected = hovered !== null && (e.source === hovered || e.target === hovered);
           return (
             <line
               key={`${e.source}-${e.target}`}
               data-edge={`${e.source}-${e.target}`}
               stroke={isModel ? "#19C39C" : "#0D9488"}
-              strokeWidth={1}
+              strokeWidth={isConnected ? 2.5 : 1}
               strokeDasharray={isModel ? "none" : "5,4"}
-              opacity={0.6}
+              opacity={hovered === null ? 0.6 : isConnected ? 0.9 : 0.15}
+              style={{ transition: "opacity 0.15s, stroke-width 0.15s" }}
             />
           );
         })}
-        {ready && graph && graph.nodes.map((node) => (
-          <g
-            key={node.id}
-            data-node={node.id}
-            style={{ cursor: "pointer" }}
-            onMouseEnter={(e) => {
-              setHovered(node.id);
-              const rect = containerRef.current?.getBoundingClientRect();
-              if (rect) {
-                setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top - 10, name: node.name });
-              }
-            }}
-            onMouseMove={(e) => {
-              const rect = containerRef.current?.getBoundingClientRect();
-              if (rect) {
-                setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top - 10, name: node.name });
-              }
-            }}
-            onMouseLeave={() => { setHovered(null); setTooltip(null); }}
-            onClick={() => router.push(`/entities/${node.slug}`)}
-          >
-            <circle
-              r={node.radius}
-              fill={COLOR_MAP[node.type]}
-              opacity={hovered === null || hovered === node.id ? 1 : 0.35}
-              style={{ transition: "opacity 0.15s" }}
-            />
-            {node.type === "company" && (
-              <text textAnchor="middle" dy={node.radius + 14} fill="#1E0E6F" fontSize="11" fontWeight="700">
-                {node.name}
-              </text>
-            )}
-          </g>
-        ))}
+        {ready && graph && graph.nodes.map((node) => {
+          const isHovered = hovered === node.id;
+          const isConnected = hovered !== null && graph.edges.some(
+            e => (e.source === hovered && e.target === node.id) || (e.target === hovered && e.source === node.id)
+          );
+          return (
+            <g
+              key={node.id}
+              data-node={node.id}
+              style={{
+                cursor: "pointer",
+                transform: isHovered ? "scale(1.15)" : "scale(1)",
+                transformOrigin: "center",
+                transition: "transform 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                setHovered(node.id);
+                const rect = containerRef.current?.getBoundingClientRect();
+                if (rect) {
+                  setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top - 10, name: node.name });
+                }
+              }}
+              onMouseMove={(e) => {
+                const rect = containerRef.current?.getBoundingClientRect();
+                if (rect) {
+                  setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top - 10, name: node.name });
+                }
+              }}
+              onMouseLeave={() => { setHovered(null); setTooltip(null); }}
+              onClick={() => router.push(`/entities/${node.slug}`)}
+            >
+              <circle
+                r={node.radius}
+                fill={COLOR_MAP[node.type]}
+                opacity={hovered === null || isHovered || isConnected ? 1 : 0.25}
+                style={{ transition: "opacity 0.15s" }}
+              />
+              {node.type === "company" && (
+                <text textAnchor="middle" dy={node.radius + 14} fill="#1E0E6F" fontSize="11" fontWeight="700">
+                  {node.name}
+                </text>
+              )}
+            </g>
+          );
+        })}
       </svg>
     </div>
   );
