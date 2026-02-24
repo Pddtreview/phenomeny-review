@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import ArticleFeed from "@/components/article-feed";
 import SubscribeForm from "@/components/subscribe-form";
@@ -14,6 +15,33 @@ interface Article {
   category: string | null;
   created_at: string;
   publish_at: string | null;
+}
+
+interface YearSummary {
+  year: number;
+  count: number;
+}
+
+async function fetchTimelineYears(): Promise<YearSummary[]> {
+  const { data, error } = await supabase
+    .from("timelines")
+    .select("event_date")
+    .not("event_date", "is", null);
+
+  if (error || !data) return [];
+
+  const yearCounts = new Map<number, number>();
+  for (const row of data) {
+    const y = new Date(row.event_date).getFullYear();
+    if (y >= 1900 && y <= 2100) {
+      yearCounts.set(y, (yearCounts.get(y) || 0) + 1);
+    }
+  }
+
+  return Array.from(yearCounts.entries())
+    .map(([year, count]) => ({ year, count }))
+    .sort((a, b) => b.year - a.year)
+    .slice(0, 3);
 }
 
 async function fetchArticles(): Promise<{ data: Article[] | null; error: string | null }> {
@@ -47,7 +75,10 @@ async function fetchArticles(): Promise<{ data: Article[] | null; error: string 
 }
 
 export default async function HomePage() {
-  const { data, error } = await fetchArticles();
+  const [{ data, error }, timelineYears] = await Promise.all([
+    fetchArticles(),
+    fetchTimelineYears(),
+  ]);
 
   return (
     <main className={styles.main}>
@@ -70,6 +101,30 @@ export default async function HomePage() {
           Deep analysis meets AI-augmented insight. Published for decision-makers who read before they act.
         </p>
       </section>
+
+      {timelineYears.length > 0 && (
+        <section className={styles.timelineSection}>
+          <h2 className={styles.timelineHeading}>Explore AI by Year</h2>
+          <div className={styles.timelineGrid}>
+            {timelineYears.map((y) => (
+              <Link
+                key={y.year}
+                href={`/timeline/${y.year}`}
+                className={styles.timelineCard}
+                data-testid={`card-timeline-${y.year}`}
+              >
+                <span className={styles.timelineYear}>{y.year}</span>
+                <span className={styles.timelineBadge}>
+                  {y.count} {y.count === 1 ? "event" : "events"}
+                </span>
+              </Link>
+            ))}
+          </div>
+          <Link href="/timeline" className={styles.timelineViewAll}>
+            View Full Timeline →
+          </Link>
+        </section>
+      )}
 
       {error ? (
         <p className={styles.error}>{error}</p>
