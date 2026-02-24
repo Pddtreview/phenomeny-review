@@ -22,6 +22,7 @@ src/
       page.module.css         - Admin styles
       login/page.tsx          - Admin login
       edit/[id]/page.tsx      - Article editor
+    companies/page.tsx        - Companies index (grid cards, ISR 300s)
     articles/[slug]/page.tsx  - Article detail page (SEO metadata)
     api/
       articles/route.ts       - Public articles API (GET published, POST new)
