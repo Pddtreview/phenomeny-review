@@ -288,6 +288,10 @@
   flex-shrink: 0;
 }
 
+.graphSection {
+  margin-bottom: 2.5rem;
+}
+
 .ecosystemParent {
   font-size: 0.925rem;
   color: #6B7280;

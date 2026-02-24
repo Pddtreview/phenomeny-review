@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import styles from "./page.module.css";
+import EcosystemGraph from "@/components/ecosystem-graph";
 
 export const dynamic = "force-dynamic";
 
@@ -406,6 +407,17 @@ export default async function EntityPage({ params }: EntityPageProps) {
           </section>
         );
       })()}
+
+      {isCompany && (evolution.length > 0 || crossCompanyExposure.length > 0) && (
+        <section className={styles.graphSection}>
+          <h2 className={styles.sectionHeading}>Ecosystem Graph</h2>
+          <EcosystemGraph
+            company={{ id: entity.id, name: entity.name, slug: entity.slug }}
+            models={evolution.map((m: any) => ({ id: m.id, name: m.name, slug: m.slug }))}
+            relatedCompanies={crossCompanyExposure.map((c: any) => ({ id: c.id, name: c.name, slug: c.slug }))}
+          />
+        </section>
+      )}
 
       <section className={styles.section}>
         <h2 className={styles.sectionHeading}>Related Articles</h2>

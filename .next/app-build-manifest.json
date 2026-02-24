@@ -17,12 +17,6 @@
       "static/chunks/main-app.js",
       "static/css/app/entities/[name]/page.css",
       "static/chunks/app/entities/[name]/page.js"
-    ],
-    "/entities/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/entities/page.css",
-      "static/chunks/app/entities/page.js"
     ]
   }
 }

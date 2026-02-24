@@ -292,6 +292,10 @@
   flex-shrink: 0;
 }
 
+.page_graphSection__XoAYd {
+  margin-bottom: 2.5rem;
+}
+
 .page_ecosystemParent___YN5c {
   font-size: 0.925rem;
   color: #6B7280;
@@ -557,5 +561,36 @@
   line-height: 1.5;
   color: #6B7280;
   margin: 0;
+}
+
+/*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[3]!./src/components/ecosystem-graph.module.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************/
+.ecosystem-graph_container__AfFCR {
+  position: relative;
+  width: 100%;
+  height: 450px;
+  background: #FAFAFA;
+  border: 1px solid #F3F4F6;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.ecosystem-graph_svg__X5gQD {
+  display: block;
+}
+
+.ecosystem-graph_tooltip__vSCp_ {
+  position: absolute;
+  pointer-events: none;
+  background: #1E0E6F;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  z-index: 10;
 }
 
