@@ -24,6 +24,11 @@ India–China
 USA Europe
 Intelligence Brief
 
+Extract only clearly mentioned entities from the article.
+Do not hallucinate entities.
+Maximum 8 entities.
+If none are clearly mentioned, return an empty array.
+
 Return STRICT JSON ONLY:
 
 {
@@ -31,6 +36,9 @@ Return STRICT JSON ONLY:
   "content": "",
   "summary": "",
   "category": "",
+  "entities": [
+    { "name": "", "type": "company | model | country | lab | regulator" }
+  ],
   "timeline_event": {
     "entity": "",
     "date": "",
@@ -39,7 +47,7 @@ Return STRICT JSON ONLY:
   }
 }
 
-If no timeline_event exists, return null.
+If no timeline_event exists, set timeline_event to null.
 No markdown.
 No commentary.
 Only valid JSON.
@@ -104,6 +112,7 @@ interface AiResult {
   content: string;
   summary: string;
   category: string;
+  entities: { name: string; type: string }[];
   timeline_event: {
     entity: string;
     date: string;
@@ -292,6 +301,7 @@ export async function POST(request: NextRequest) {
       success: true,
       slug,
       article_id: articleData.id,
+      entities: parsed.entities || [],
     });
   } catch (err: any) {
     console.error("Ingest error:", err);
