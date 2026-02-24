@@ -1,0 +1,169 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.header {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1E0E6F;
+}
+
+.backLink {
+  font-size: 0.85rem;
+  color: #1E0E6F;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.tableWrap {
+  width: 100%;
+  max-width: 1100px;
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.825rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  background: #f3f0ff;
+  color: #1E0E6F;
+  font-weight: 700;
+  border-bottom: 2px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.typeBadge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.typeRelationship {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.typeTimeline {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.predicate {
+  font-family: monospace;
+  font-size: 0.78rem;
+  color: #6B7280;
+}
+
+.revision {
+  font-weight: 700;
+  color: #1E0E6F;
+  text-align: center;
+}
+
+.statusSelect {
+  padding: 0.3rem 0.5rem;
+  font-size: 0.78rem;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  background: #fff;
+  font-family: inherit;
+  cursor: pointer;
+  color: #374151;
+  transition: border-color 0.15s;
+}
+
+.statusSelect:hover {
+  border-color: #1E0E6F;
+}
+
+.statusSelect:focus {
+  outline: none;
+  border-color: #19C39C;
+  box-shadow: 0 0 0 2px rgba(25, 195, 156, 0.2);
+}
+
+.date {
+  font-size: 0.75rem;
+  color: #9CA3AF;
+  white-space: nowrap;
+}
+
+.empty {
+  text-align: center;
+  padding: 3rem;
+  color: #9CA3AF;
+  font-size: 0.9rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #6B7280;
+  font-size: 0.9rem;
+}
+
+.entityName {
+  font-weight: 600;
+  color: #1E0E6F;
+}
+
+.entityType {
+  font-size: 0.7rem;
+  color: #9CA3AF;
+  margin-left: 0.25rem;
+}
+
+.currentBadge {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 0.35rem;
+}
+
+.currentTrue {
+  background: #19C39C;
+}
+
+.currentFalse {
+  background: #d1d5db;
+}

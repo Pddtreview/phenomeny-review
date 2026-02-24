@@ -259,6 +259,12 @@ export default function AdminPage() {
     <main className={styles.main}>
       <h1 className={styles.heading}>Admin Dashboard</h1>
 
+      <div style={{ width: "100%", maxWidth: "600px", marginBottom: "1rem", textAlign: "right" }}>
+        <Link href="/admin/claims" style={{ fontSize: "0.85rem", color: "#1E0E6F", fontWeight: 600 }}>
+          Claims Management →
+        </Link>
+      </div>
+
       <section className={styles.ingestSection}>
         <h2 className={styles.ingestHeading}>Intelligence Ingestion</h2>
         <p className={styles.ingestDescription}>Paste a URL to fetch, analyze, and publish as structured intelligence.</p>
