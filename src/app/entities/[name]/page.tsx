@@ -165,6 +165,53 @@ export default async function EntityPage({ params }: EntityPageProps) {
     "url": `${baseUrl}/entities/${entity.slug}`,
   };
 
+  let snapshot: {
+    totalModels: number;
+    firstModelYear: string | null;
+    latestModelName: string | null;
+    totalTimelineEvents: number;
+    mostRecentActivity: string | null;
+  } | null = null;
+
+  if (isCompany && evolution.length > 0) {
+    const modelIds = evolution.map((m: any) => m.id);
+    const allEntityIds = [entity.id, ...modelIds];
+
+    const { count: timelineCount } = await supabase
+      .from("timelines")
+      .select("id", { count: "exact", head: true })
+      .in("entity", allEntityIds);
+
+    const { data: recentRow } = await supabase
+      .from("timelines")
+      .select("event_date")
+      .in("entity", allEntityIds)
+      .order("event_date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const withDates = evolution.filter((m: any) => m.first_event);
+    const sorted = [...withDates].sort((a: any, b: any) =>
+      new Date(a.first_event).getTime() - new Date(b.first_event).getTime()
+    );
+
+    snapshot = {
+      totalModels: evolution.length,
+      firstModelYear: sorted.length > 0
+        ? new Date(sorted[0].first_event).getFullYear().toString()
+        : null,
+      latestModelName: sorted.length > 0 ? sorted[sorted.length - 1].name : null,
+      totalTimelineEvents: timelineCount || 0,
+      mostRecentActivity: recentRow?.event_date
+        ? new Date(recentRow.event_date).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })
+        : null,
+    };
+  }
+
   return (
     <main className={styles.main}>
       <script
@@ -175,6 +222,35 @@ export default async function EntityPage({ params }: EntityPageProps) {
 
       <h1 className={styles.heading}>{entity.name}</h1>
       <span className={styles.typeBadge}>{entity.type}</span>
+
+      {snapshot && (
+        <section className={styles.snapshotSection}>
+          <div className={styles.snapshotGrid}>
+            <div className={styles.snapshotCard}>
+              <span className={styles.snapshotValue}>{snapshot.totalModels}</span>
+              <span className={styles.snapshotLabel}>Models</span>
+            </div>
+            <div className={styles.snapshotCard}>
+              <span className={styles.snapshotValue}>{snapshot.firstModelYear || "—"}</span>
+              <span className={styles.snapshotLabel}>First Model Year</span>
+            </div>
+            <div className={styles.snapshotCard}>
+              <span className={styles.snapshotValue}>{snapshot.latestModelName || "—"}</span>
+              <span className={styles.snapshotLabel}>Latest Model</span>
+            </div>
+            <div className={styles.snapshotCard}>
+              <span className={styles.snapshotValue}>{snapshot.totalTimelineEvents}</span>
+              <span className={styles.snapshotLabel}>Timeline Events</span>
+            </div>
+            {snapshot.mostRecentActivity && (
+              <div className={styles.snapshotCard}>
+                <span className={styles.snapshotValue}>{snapshot.mostRecentActivity}</span>
+                <span className={styles.snapshotLabel}>Most Recent Activity</span>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       <section className={styles.section}>
         <h2 className={styles.sectionHeading}>Related Articles</h2>
