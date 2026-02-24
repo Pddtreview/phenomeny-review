@@ -89,8 +89,33 @@ export default async function EntityPage({ params }: EntityPageProps) {
     getTimelineEntries(entity.name),
   ]);
 
+  const schemaTypeMap: Record<string, string> = {
+    company: "Organization",
+    lab: "Organization",
+    institution: "Organization",
+    regulator: "Organization",
+    person: "Person",
+    country: "Place",
+    event: "Event",
+    model: "SoftwareApplication",
+  };
+
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+    || (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : "http://localhost:5000");
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": schemaTypeMap[entity.type] || "Thing",
+    "name": entity.name,
+    "url": `${baseUrl}/entities/${entity.slug}`,
+  };
+
   return (
     <main className={styles.main}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link href="/" className={styles.back}>← Home</Link>
 
       <h1 className={styles.heading}>{entity.name}</h1>
