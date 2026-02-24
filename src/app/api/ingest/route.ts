@@ -181,21 +181,37 @@ export async function POST(request: NextRequest) {
     }
 
     let fetchRes: Response;
+    const fetchStart = Date.now();
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
       fetchRes = await fetch(url, {
         headers: {
           "User-Agent": "Mozilla/5.0 (compatible; PhenomenyBot/1.0)",
           "Accept": "text/html,application/xhtml+xml",
         },
-        signal: AbortSignal.timeout(15000),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
     } catch (err: any) {
+      const fetchDuration = Date.now() - fetchStart;
+      console.log("[ingest] Fetch time:", fetchDuration);
+      if (err.name === "AbortError") {
+        await logIngestion(url, "fetch_error", startTime, "Request timed out after 10s");
+        return NextResponse.json(
+          { success: false, error: "Request timed out." },
+          { status: 408 }
+        );
+      }
       await logIngestion(url, "fetch_error", startTime, err.message);
       return NextResponse.json(
         { success: false, error: `Failed to fetch URL: ${err.message}` },
         { status: 400 }
       );
     }
+
+    const fetchDuration = Date.now() - fetchStart;
+    console.log("[ingest] Fetch time:", fetchDuration);
 
     if (!fetchRes.ok) {
       const errMsg = `URL returned ${fetchRes.status} ${fetchRes.statusText}`;
@@ -206,8 +222,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const contentType = fetchRes.headers.get("content-type") || "";
+    if (!contentType.includes("text/html")) {
+      await logIngestion(url, "fetch_error", startTime, `Unsupported content type: ${contentType}`);
+      return NextResponse.json(
+        { success: false, error: "Unsupported content type" },
+        { status: 400 }
+      );
+    }
+
     const html = await fetchRes.text();
-    const cleanedText = stripHtml(html).slice(0, 15000);
+    let cleanedText = stripHtml(html);
+    if (cleanedText.length > 15000) {
+      cleanedText = cleanedText.slice(0, 15000);
+      console.warn("[ingest] Content truncated");
+    }
 
     if (cleanedText.length < 100) {
       await logIngestion(url, "fetch_error", startTime, "Extracted text too short");
