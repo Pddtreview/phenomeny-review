@@ -559,6 +559,61 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (parsed.entities && Array.isArray(parsed.entities) && parsed.entities.length > 0) {
+      for (const entity of parsed.entities) {
+        const entityName = normalizeEntityName(entity.name || "");
+        if (!entityName) continue;
+
+        const entitySlug = entityName
+          .toLowerCase()
+          .trim()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
+
+        const { data: existingEnt } = await supabase
+          .from("entities")
+          .select("id, summary")
+          .eq("slug", entitySlug)
+          .limit(1)
+          .single();
+
+        if (existingEnt && !existingEnt.summary) {
+          try {
+            const summaryResponse = await anthropicClient.post("/messages", {
+              model: "claude-sonnet-4-20250514",
+              max_tokens: 600,
+              system: `You are a concise encyclopedia writer. Write a 200–300 word structured summary about the given entity. Cover: what it is, its significance in the AI/tech landscape, key products or contributions, and notable milestones. Use neutral, analytical tone. No markdown. No headers. Plain text only.`,
+              messages: [
+                {
+                  role: "user",
+                  content: `Write a 200–300 word summary about: ${entityName} (type: ${entity.type})`,
+                },
+              ],
+            });
+
+            const summaryText = summaryResponse.data?.content?.[0]?.text;
+            if (summaryText && summaryText.trim().length > 50) {
+              const { error: summaryUpdateError } = await supabase
+                .from("entities")
+                .update({ summary: summaryText.trim() })
+                .eq("id", existingEnt.id)
+                .is("summary", null);
+
+              if (summaryUpdateError) {
+                console.error("[ingest] Summary update failed for", entityName, summaryUpdateError.message);
+              } else {
+                console.log("[ingest] Summary generated for:", entityName);
+              }
+            }
+          } catch (summaryErr: any) {
+            console.error("[ingest] Summary generation failed for", entityName, summaryErr.message);
+          }
+        }
+      }
+    }
+
     console.log(
       "[ingest] timeline_event raw object:",
       JSON.stringify(parsed.timeline_event, null, 2)
