@@ -24,6 +24,7 @@ src/
       edit/[id]/page.tsx      - Article editor
     companies/page.tsx        - Companies index (grid cards, ISR 300s)
     models/page.tsx           - Models index (grid cards, ISR 300s)
+    timeline/page.tsx         - Timeline index (year list with event counts, ISR 300s)
     timeline/[year]/page.tsx  - Timeline year view (events grouped by entity, ISR 300s)
     articles/[slug]/page.tsx  - Article detail page (SEO metadata)
     api/
