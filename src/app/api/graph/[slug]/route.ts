@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
+interface ClaimInfo {
+  revision: number;
+  verification_status: string;
+  confidence: number | null;
+  created_at: string;
+}
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: { slug: string } }
@@ -48,6 +55,29 @@ export async function GET(
       .order("event_date", { ascending: true }),
   ]);
 
+  const allRels = [...(outRes.data || []), ...(inRes.data || [])];
+
+  let claimMap: Record<string, ClaimInfo> = {};
+  if (allRels.length > 0) {
+    const { data: claims } = await supabase
+      .from("claims")
+      .select("subject_id, object_id, predicate, revision, verification_status, confidence, created_at")
+      .eq("claim_type", "relationship")
+      .eq("is_current", true);
+
+    if (claims) {
+      for (const c of claims) {
+        const key = `${c.subject_id}|${c.object_id}|${c.predicate}`;
+        claimMap[key] = {
+          revision: c.revision,
+          verification_status: c.verification_status,
+          confidence: c.confidence,
+          created_at: c.created_at,
+        };
+      }
+    }
+  }
+
   const outIds = new Set<string>();
   const inIds = new Set<string>();
 
@@ -70,13 +100,29 @@ export async function GET(
     }
   }
 
+  function enrichWithClaim(r: any) {
+    const key = `${r.subject_id}|${r.object_id}|${r.predicate}`;
+    const claim = claimMap[key] || null;
+    return {
+      ...r,
+      claim: claim
+        ? {
+            revision: claim.revision,
+            verification_status: claim.verification_status,
+            confidence: claim.confidence,
+            created_at: claim.created_at,
+          }
+        : null,
+    };
+  }
+
   const relationshipsOut = (outRes.data || []).map((r) => ({
-    ...r,
+    ...enrichWithClaim(r),
     object: relatedEntities[r.object_id] || null,
   }));
 
   const relationshipsIn = (inRes.data || []).map((r) => ({
-    ...r,
+    ...enrichWithClaim(r),
     subject: relatedEntities[r.subject_id] || null,
   }));
 
