@@ -206,25 +206,51 @@ export default async function EntityPage({ params }: EntityPageProps) {
         <section className={styles.section}>
           <h2 className={styles.sectionHeading}>Evolution</h2>
           <div className={styles.evolutionList}>
-            {evolution.map((model: any) => (
-              <div key={model.id} className={styles.evolutionItem}>
-                <span className={styles.evolutionDot} />
-                <div className={styles.evolutionContent}>
-                  <Link href={`/entities/${model.slug}`} className={styles.evolutionName}>
-                    {model.name}
-                  </Link>
-                  <span className={styles.evolutionDate}>
-                    {model.first_event
-                      ? new Date(model.first_event).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })
-                      : "—"}
-                  </span>
-                </div>
-              </div>
-            ))}
+            {(() => {
+              let lastYear: string | null = null;
+              const latestIdx = evolution.length - 1;
+              return evolution.map((model: any, idx: number) => {
+                const year = model.first_event
+                  ? new Date(model.first_event).getFullYear().toString()
+                  : null;
+                const showYear = year && year !== lastYear;
+                if (year) lastYear = year;
+                const isLatest = idx === latestIdx;
+
+                return (
+                  <div key={model.id}>
+                    {showYear && (
+                      <div className={styles.evolutionYearLabel}>{year}</div>
+                    )}
+                    <div
+                      className={`${styles.evolutionItem} ${isLatest ? styles.evolutionItemLatest : ""}`}
+                      style={{ animationDelay: `${idx * 80}ms` }}
+                    >
+                      <span className={`${styles.evolutionDot} ${isLatest ? styles.evolutionDotLatest : ""}`} />
+                      <div className={styles.evolutionContent}>
+                        <div className={styles.evolutionNameRow}>
+                          <Link href={`/entities/${model.slug}`} className={styles.evolutionName}>
+                            {model.name}
+                          </Link>
+                          {isLatest && (
+                            <span className={styles.evolutionBadge}>Latest</span>
+                          )}
+                        </div>
+                        <span className={styles.evolutionDate}>
+                          {model.first_event
+                            ? new Date(model.first_event).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })
+                            : "—"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              });
+            })()}
           </div>
         </section>
       )}
