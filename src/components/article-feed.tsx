@@ -66,11 +66,12 @@ export default function ArticleFeed({ articles }: { articles: Article[] }) {
                     ? article.content.slice(0, 160) + "…"
                     : article.content}
                 </p>
-                <time className={styles.cardDate}>
+                <time className={styles.cardDate} suppressHydrationWarning>
                   {new Date(article.publish_at || article.created_at).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "short",
                     day: "numeric",
+                    timeZone: "UTC",
                   })}
                 </time>
               </Link>
