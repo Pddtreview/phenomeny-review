@@ -28,6 +28,7 @@ src/
       articles/[id]/route.ts  - Article PATCH/DELETE (auth required)
       admin/articles/route.ts - Admin articles API (all statuses)
       ai-edit/route.ts        - AI editing endpoint (6 transformation actions)
+      ingest/route.ts         - Intelligence ingestion (URL → article + timeline)
       subscribe/route.ts      - Newsletter subscription
       health/route.ts         - Health check
   lib/
@@ -50,6 +51,7 @@ next.config.mjs               - Next.js config (standalone output enabled)
 - **Categories**: AI, AI Governance, AI Operations, Quantum, Space, Biotech, India–China, USA Europe, Intelligence Brief
 - **Admin Auth**: Cookie-based (admin-auth cookie checked against ADMIN_SECRET env var)
 - **Homepage**: Category filter pills, article cards grid, subscribe section
+- **Intelligence Ingestion**: POST /api/ingest — URL fetch, HTML cleaning (cheerio), Anthropic structured extraction, dual insert into articles + timelines, source_url deduplication
 - **SEO**: Open Graph, Twitter cards, canonical URLs on article pages
 
 ## Brand Colors
@@ -71,7 +73,9 @@ next.config.mjs               - Next.js config (standalone output enabled)
 - Run: `node dist/index.cjs` (loads .next/standalone/server.js)
 
 ## Database (Supabase)
-Articles table columns: id (uuid), title, content, slug, status (draft/published/scheduled), category, publish_at (timestamptz), created_at
+Articles table columns: id (uuid), title, content, slug, status (draft/published/scheduled), publish_at (timestamptz), source_url, created_at
+Timelines table columns: id (uuid), entity (text, NOT NULL), title, description, source_url, confidence (float), event_date (date), created_at
+Note: category column used in code but does not exist in the database schema (silently ignored on insert)
 
 ## Running
 ```
@@ -85,3 +89,4 @@ npm run start   # Production server on port 5000
 - 2026-02-23: Admin auth, AI editing, scheduled publishing, categories
 - 2026-02-23: Homepage redesign with purple/emerald brand, category filtering
 - 2026-02-23: Deployment fix — standalone output + dist/index.cjs entry point
+- 2026-02-24: Intelligence ingestion system — POST /api/ingest endpoint with URL fetch, HTML cleaning (cheerio), Anthropic structured extraction, dual insert (articles + timelines), source_url deduplication, admin UI integration
