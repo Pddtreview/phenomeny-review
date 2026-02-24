@@ -174,6 +174,7 @@ export default async function EntityPage({ params }: EntityPageProps) {
   } | null = null;
 
   let crossCompanyExposure: { id: string; name: string; slug: string; frequency: number }[] = [];
+  let modelGrowth: { year: string; count: number }[] = [];
 
   if (isCompany && evolution.length > 0) {
     const modelIds = evolution.map((m: any) => m.id);
@@ -212,6 +213,18 @@ export default async function EntityPage({ params }: EntityPageProps) {
           })
         : null,
     };
+
+    const yearMap: Record<string, Set<string>> = {};
+    for (const m of evolution) {
+      if (m.first_event) {
+        const yr = new Date(m.first_event).getFullYear().toString();
+        if (!yearMap[yr]) yearMap[yr] = new Set();
+        yearMap[yr].add(m.id);
+      }
+    }
+    modelGrowth = Object.entries(yearMap)
+      .map(([year, ids]) => ({ year, count: ids.size }))
+      .sort((a, b) => a.year.localeCompare(b.year));
   }
 
   if (isCompany) {
@@ -309,6 +322,29 @@ export default async function EntityPage({ params }: EntityPageProps) {
           </div>
         </section>
       )}
+
+      {modelGrowth.length > 0 && (() => {
+        const maxCount = Math.max(...modelGrowth.map(g => g.count));
+        return (
+          <section className={styles.growthSection}>
+            <h2 className={styles.sectionHeading}>Model Growth</h2>
+            <div className={styles.growthChart}>
+              {modelGrowth.map((g) => (
+                <div key={g.year} className={styles.growthRow}>
+                  <span className={styles.growthYear}>{g.year}</span>
+                  <div className={styles.growthBarTrack}>
+                    <div
+                      className={styles.growthBar}
+                      style={{ width: `${(g.count / maxCount) * 100}%` }}
+                    />
+                  </div>
+                  <span className={styles.growthCount}>{g.count}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+      })()}
 
       <section className={styles.section}>
         <h2 className={styles.sectionHeading}>Related Articles</h2>

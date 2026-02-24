@@ -183,6 +183,56 @@
   line-height: 1.4;
 }
 
+.growthSection {
+  margin-bottom: 2.5rem;
+}
+
+.growthChart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.growthRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.growthYear {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #6B7280;
+  min-width: 2.75rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.growthBarTrack {
+  flex: 1;
+  height: 1.25rem;
+  background: #F3F4F6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.growthBar {
+  height: 100%;
+  background: linear-gradient(90deg, #1E0E6F, #19C39C);
+  border-radius: 4px;
+  min-width: 4px;
+  transition: width 0.3s ease;
+}
+
+.growthCount {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1E0E6F;
+  min-width: 1.5rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 .ecosystemParent {
   font-size: 0.925rem;
   color: #6B7280;

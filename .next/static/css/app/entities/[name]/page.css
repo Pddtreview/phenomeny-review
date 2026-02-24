@@ -187,6 +187,56 @@
   line-height: 1.4;
 }
 
+.page_growthSection__yWaRX {
+  margin-bottom: 2.5rem;
+}
+
+.page_growthChart__JWr5K {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.page_growthRow__CZXma {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.page_growthYear__ynKqi {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #6B7280;
+  min-width: 2.75rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.page_growthBarTrack__Qyapw {
+  flex: 1 1;
+  height: 1.25rem;
+  background: #F3F4F6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.page_growthBar__mBJyO {
+  height: 100%;
+  background: linear-gradient(90deg, #1E0E6F, #19C39C);
+  border-radius: 4px;
+  min-width: 4px;
+  transition: width 0.3s ease;
+}
+
+.page_growthCount__6jcct {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1E0E6F;
+  min-width: 1.5rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 .page_ecosystemParent___YN5c {
   font-size: 0.925rem;
   color: #6B7280;
