@@ -244,26 +244,32 @@ export async function POST(request: NextRequest) {
     const baseSlug = generateSlug(parsed.title);
     const slug = await getUniqueSlug(baseSlug);
 
+    const articleInsert = {
+      title: parsed.title,
+      content: parsed.content,
+      slug,
+      status: "published",
+      publish_at: new Date().toISOString(),
+      source_url: url,
+    };
+
+    console.log("[ingest] Inserting article (category omitted to isolate schema cache issue)");
+
     const { data: articleData, error: articleError } = await supabase
       .from("articles")
-      .insert({
-        title: parsed.title,
-        content: parsed.content,
-        slug,
-        status: "published",
-        publish_at: new Date().toISOString(),
-        category: parsed.category || null,
-        source_url: url,
-      })
+      .insert(articleInsert)
       .select("id")
       .single();
 
     if (articleError) {
+      console.error("[ingest] Article insert error:", JSON.stringify(articleError, null, 2));
       return NextResponse.json(
         { success: false, error: `Article insert failed: ${articleError.message}` },
         { status: 500 }
       );
     }
+
+    console.log("[ingest] Article inserted successfully, id:", articleData.id);
 
     if (parsed.timeline_event && parsed.timeline_event.entity) {
       const { error: timelineError } = await supabase
