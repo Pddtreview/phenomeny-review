@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -20,6 +21,28 @@ async function getEntity(name: string) {
 
   if (error || !data) return null;
   return data;
+}
+
+export async function generateMetadata({ params }: EntityPageProps): Promise<Metadata> {
+  const entity = await getEntity(params.name);
+
+  if (!entity) {
+    return { title: "Entity Not Found" };
+  }
+
+  const title = `${entity.name} — AI Intelligence Timeline | Phenomeny Review™`;
+  const description = `Explore ${entity.name}'s AI developments, related articles, research milestones, and innovation timeline.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      siteName: "Phenomeny Review™",
+    },
+  };
 }
 
 async function getRelatedArticles(entityId: string) {
