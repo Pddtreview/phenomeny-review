@@ -205,6 +205,8 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
         </div>
       )}
       <svg ref={svgRef} width={dims.width} height={dims.height} className={styles.svg}>
+        <circle cx={dims.width / 2} cy={dims.height / 2} r={140} fill="none" stroke="#9CA3AF" strokeWidth={1} strokeDasharray="6,5" opacity={0.12} />
+        <circle cx={dims.width / 2} cy={dims.height / 2} r={230} fill="none" stroke="#D1D5DB" strokeWidth={1} strokeDasharray="6,5" opacity={0.08} />
         {ready && graph && graph.edges.map((e) => {
           const targetNode = graph.nodes.find(n => n.id === e.target);
           const isModel = targetNode?.type === "model";
