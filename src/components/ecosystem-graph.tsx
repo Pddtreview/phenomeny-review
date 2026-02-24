@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./ecosystem-graph.module.css";
 
@@ -27,17 +27,16 @@ interface EcosystemGraphProps {
   relatedCompanies: { id: string; name: string; slug: string }[];
 }
 
-function buildGraph(
+function buildInitialNodes(
   company: EcosystemGraphProps["company"],
   models: EcosystemGraphProps["models"],
   relatedCompanies: EcosystemGraphProps["relatedCompanies"],
   width: number,
   height: number
-) {
+): GraphNode[] {
   const cx = width / 2;
   const cy = height / 2;
   const nodes: GraphNode[] = [];
-  const edges: GraphEdge[] = [];
 
   nodes.push({
     id: company.id, name: company.name, slug: company.slug,
@@ -53,7 +52,6 @@ function buildGraph(
       x: cx + Math.cos(angle) * dist, y: cy + Math.sin(angle) * dist,
       vx: 0, vy: 0, radius: 14,
     });
-    edges.push({ source: company.id, target: m.id });
   });
 
   const rStep = relatedCompanies.length > 0 ? (2 * Math.PI) / relatedCompanies.length : 0;
@@ -65,10 +63,20 @@ function buildGraph(
       x: cx + Math.cos(angle) * dist, y: cy + Math.sin(angle) * dist,
       vx: 0, vy: 0, radius: 10,
     });
-    edges.push({ source: company.id, target: rc.id });
   });
 
-  return { nodes, edges };
+  return nodes;
+}
+
+function buildEdges(
+  company: EcosystemGraphProps["company"],
+  models: EcosystemGraphProps["models"],
+  relatedCompanies: EcosystemGraphProps["relatedCompanies"]
+): GraphEdge[] {
+  const edges: GraphEdge[] = [];
+  models.forEach((m) => edges.push({ source: company.id, target: m.id }));
+  relatedCompanies.forEach((rc) => edges.push({ source: company.id, target: rc.id }));
+  return edges;
 }
 
 const COLOR_MAP: Record<string, string> = {
@@ -79,14 +87,18 @@ const COLOR_MAP: Record<string, string> = {
 
 export default function EcosystemGraph({ company, models, relatedCompanies }: EcosystemGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const svgRef = useRef<SVGSVGElement>(null);
-  const graphRef = useRef<{ nodes: GraphNode[]; edges: GraphEdge[] } | null>(null);
   const animRef = useRef<number>(0);
   const [hovered, setHovered] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string } | null>(null);
-  const [ready, setReady] = useState(false);
   const [dims, setDims] = useState({ width: 600, height: 450 });
   const router = useRouter();
+
+  const [nodes, setNodes] = useState<GraphNode[]>(() =>
+    buildInitialNodes(company, models, relatedCompanies, 600, 450)
+  );
+  const [edges] = useState<GraphEdge[]>(() =>
+    buildEdges(company, models, relatedCompanies)
+  );
 
   useEffect(() => {
     const update = () => {
@@ -103,34 +115,38 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
     const { width, height } = dims;
     const cx = width / 2;
     const cy = height / 2;
-    const graph = buildGraph(company, models, relatedCompanies, width, height);
-    graphRef.current = graph;
-    setReady(true);
+
+    const simNodes = buildInitialNodes(company, models, relatedCompanies, width, height);
+    const simEdges = buildEdges(company, models, relatedCompanies);
 
     let alpha = 1.0;
     const alphaDecay = 0.97;
     const alphaMin = 0.005;
 
+    const nodeMap = new Map<string, GraphNode>();
+    for (const n of simNodes) nodeMap.set(n.id, n);
+
     const tick = () => {
-      const ns = graph.nodes;
       if (alpha < alphaMin) return;
 
-      for (let i = 0; i < ns.length; i++) {
-        for (let j = i + 1; j < ns.length; j++) {
-          const dx = ns[j].x - ns[i].x;
-          const dy = ns[j].y - ns[i].y;
+      for (let i = 0; i < simNodes.length; i++) {
+        for (let j = i + 1; j < simNodes.length; j++) {
+          const a = simNodes[i];
+          const b = simNodes[j];
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
           const d = Math.sqrt(dx * dx + dy * dy) || 1;
           const f = (2500 / (d * d)) * alpha;
           const fx = (dx / d) * f;
           const fy = (dy / d) * f;
-          ns[i].vx -= fx; ns[i].vy -= fy;
-          ns[j].vx += fx; ns[j].vy += fy;
+          a.vx -= fx; a.vy -= fy;
+          b.vx += fx; b.vy += fy;
         }
       }
 
-      for (const e of graph.edges) {
-        const s = ns.find(n => n.id === e.source)!;
-        const t = ns.find(n => n.id === e.target)!;
+      for (const e of simEdges) {
+        const s = nodeMap.get(e.source)!;
+        const t = nodeMap.get(e.target)!;
         const dx = t.x - s.x;
         const dy = t.y - s.y;
         const d = Math.sqrt(dx * dx + dy * dy) || 1;
@@ -144,7 +160,7 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
 
       const damping = 0.85 + (1 - alpha) * 0.13;
 
-      for (const n of ns) {
+      for (const n of simNodes) {
         if (n.type === "company") {
           n.x = cx; n.y = cy;
           n.vx = 0; n.vy = 0;
@@ -171,24 +187,7 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
         n.y = Math.max(pad, Math.min(height - pad, n.y));
       }
 
-      const svg = svgRef.current;
-      if (svg) {
-        for (const e of graph.edges) {
-          const el = svg.querySelector(`[data-edge="${e.source}-${e.target}"]`) as SVGLineElement;
-          const s = ns.find(n => n.id === e.source);
-          const t = ns.find(n => n.id === e.target);
-          if (el && s && t) {
-            el.setAttribute("x1", String(s.x));
-            el.setAttribute("y1", String(s.y));
-            el.setAttribute("x2", String(t.x));
-            el.setAttribute("y2", String(t.y));
-          }
-        }
-        for (const n of ns) {
-          const g = svg.querySelector(`[data-node="${n.id}"]`) as SVGGElement;
-          if (g) g.setAttribute("transform", `translate(${n.x},${n.y})`);
-        }
-      }
+      setNodes(simNodes.map(n => ({ ...n })));
 
       alpha *= alphaDecay;
       animRef.current = requestAnimationFrame(tick);
@@ -198,7 +197,8 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
     return () => cancelAnimationFrame(animRef.current);
   }, [dims, company, models, relatedCompanies]);
 
-  const graph = graphRef.current;
+  const nodeMap = new Map<string, GraphNode>();
+  for (const n of nodes) nodeMap.set(n.id, n);
 
   return (
     <div ref={containerRef} className={styles.container}>
@@ -207,17 +207,22 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
           {tooltip.name}
         </div>
       )}
-      <svg ref={svgRef} width={dims.width} height={dims.height} className={styles.svg}>
+      <svg width={dims.width} height={dims.height} className={styles.svg}>
         <circle cx={dims.width / 2} cy={dims.height / 2} r={140} fill="none" stroke="#9CA3AF" strokeWidth={1} strokeDasharray="6,5" opacity={0.12} />
         <circle cx={dims.width / 2} cy={dims.height / 2} r={230} fill="none" stroke="#D1D5DB" strokeWidth={1} strokeDasharray="6,5" opacity={0.08} />
-        {ready && graph && graph.edges.map((e) => {
-          const targetNode = graph.nodes.find(n => n.id === e.target);
-          const isModel = targetNode?.type === "model";
+        {edges.map((e) => {
+          const s = nodeMap.get(e.source);
+          const t = nodeMap.get(e.target);
+          if (!s || !t) return null;
+          const isModel = t.type === "model";
           const isConnected = hovered !== null && (e.source === hovered || e.target === hovered);
           return (
             <line
               key={`${e.source}-${e.target}`}
-              data-edge={`${e.source}-${e.target}`}
+              x1={s.x}
+              y1={s.y}
+              x2={t.x}
+              y2={t.y}
               stroke={isModel ? "#19C39C" : "#0D9488"}
               strokeWidth={isConnected ? 2.5 : 1}
               strokeDasharray={isModel ? "none" : "5,4"}
@@ -226,19 +231,17 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
             />
           );
         })}
-        {ready && graph && graph.nodes.map((node) => {
+        {nodes.map((node) => {
           const isHovered = hovered === node.id;
-          const isConnected = hovered !== null && graph.edges.some(
+          const isConnected = hovered !== null && edges.some(
             e => (e.source === hovered && e.target === node.id) || (e.target === hovered && e.source === node.id)
           );
           return (
             <g
               key={node.id}
-              data-node={node.id}
+              transform={`translate(${node.x},${node.y})`}
               style={{
                 cursor: "pointer",
-                transform: isHovered ? "scale(1.15)" : "scale(1)",
-                transformOrigin: "center",
                 transition: "transform 0.15s",
               }}
               onMouseEnter={(e) => {
