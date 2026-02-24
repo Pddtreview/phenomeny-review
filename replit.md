@@ -82,6 +82,8 @@ Timelines table columns: id (uuid), entity (text, NOT NULL), title, description,
 Entity Relationships table columns: id (uuid), subject_id (uuid FK→entities), object_id (uuid FK→entities), predicate (text), source_url (text), confidence (float), is_active (bool, default true), valid_from (date), valid_to (date), created_at, updated_at
   Allowed predicates: partnered_with, acquired, invested_in, competes_with, developed, regulates, funded_by, subsidiary_of, spun_off, collaborated_with, supplies_to, licensed_from
   Temporal logic: New relationships deactivate prior same-subject+predicate rows (is_active=false, valid_to=today) before inserting
+Claims table columns: id (uuid), claim_type (text), subject_id (uuid), object_id (uuid), predicate (text), structured_payload (jsonb), source_url (text), confidence (float), revision (int), is_current (bool), created_at, updated_at
+  Claim lifecycle: Each relationship insert creates a claim (revision=1, is_current=true). Supersession sets old claim is_current=false and inserts new claim with revision=old+1
 Note: category column used in code but does not exist in the database schema (silently ignored on insert)
 
 ## Running

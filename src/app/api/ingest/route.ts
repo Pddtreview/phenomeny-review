@@ -720,6 +720,8 @@ ${parsed.content.slice(0, 3000)}`;
                   .eq("predicate", rel.predicate)
                   .eq("is_active", true);
 
+                let maxRevision = 0;
+
                 if (samePredicateRows && samePredicateRows.length > 0) {
                   const idsToDeactivate = samePredicateRows.map((r) => r.id);
                   const now = new Date().toISOString();
@@ -732,6 +734,25 @@ ${parsed.content.slice(0, 3000)}`;
                       updated_at: now,
                     })
                     .in("id", idsToDeactivate);
+
+                  const { data: oldClaims } = await supabase
+                    .from("claims")
+                    .select("id, revision")
+                    .eq("claim_type", "relationship")
+                    .eq("subject_id", subjectId)
+                    .eq("predicate", rel.predicate)
+                    .eq("is_current", true);
+
+                  if (oldClaims && oldClaims.length > 0) {
+                    for (const c of oldClaims) {
+                      if (c.revision > maxRevision) maxRevision = c.revision;
+                    }
+                    await supabase
+                      .from("claims")
+                      .update({ is_current: false, updated_at: now })
+                      .in("id", oldClaims.map((c) => c.id));
+                  }
+
                   console.log("[ingest] Deactivated", idsToDeactivate.length, "prior relationship(s) for", subjectName, rel.predicate);
                 }
 
@@ -753,7 +774,24 @@ ${parsed.content.slice(0, 3000)}`;
                 if (relInsertError) {
                   console.error("[ingest] Relationship insert failed:", relInsertError.message);
                 } else {
-                  console.log("[ingest] Relationship created:", subjectName, rel.predicate, objectName);
+                  const { error: claimErr } = await supabase
+                    .from("claims")
+                    .insert({
+                      claim_type: "relationship",
+                      subject_id: subjectId,
+                      object_id: objectId,
+                      predicate: rel.predicate,
+                      structured_payload: null,
+                      source_url: url,
+                      confidence,
+                      revision: maxRevision + 1,
+                      is_current: true,
+                    });
+                  if (claimErr) {
+                    console.error("[ingest] Claim insert failed:", claimErr.message);
+                  } else {
+                    console.log("[ingest] Relationship + claim created:", subjectName, rel.predicate, objectName, "rev", maxRevision + 1);
+                  }
                 }
               }
             }
