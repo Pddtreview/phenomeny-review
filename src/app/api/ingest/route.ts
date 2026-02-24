@@ -54,6 +54,10 @@ async function insertTimelineWithClaim(params: {
       confidence,
       revision: 1,
       is_current: true,
+      verification_status: "auto_extracted",
+      created_by: "system",
+      updated_by: "system",
+      archived_source_url: null,
     });
 
   if (claimErr) {
@@ -843,6 +847,10 @@ ${parsed.content.slice(0, 3000)}`;
                       confidence,
                       revision: maxRevision + 1,
                       is_current: true,
+                      verification_status: "auto_extracted",
+                      created_by: "system",
+                      updated_by: "system",
+                      archived_source_url: null,
                     });
                   if (claimErr) {
                     console.error("[ingest] Claim insert failed:", claimErr.message);
