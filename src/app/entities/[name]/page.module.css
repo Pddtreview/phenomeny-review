@@ -93,6 +93,51 @@
   flex-shrink: 0;
 }
 
+.ecosystemParent {
+  font-size: 0.925rem;
+  color: #6B7280;
+  margin-bottom: 1rem;
+}
+
+.ecosystemLink {
+  color: #1E0E6F;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.ecosystemLink:hover {
+  color: #19C39C;
+}
+
+.ecosystemSiblings {
+  margin-top: 0.5rem;
+}
+
+.ecosystemLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9CA3AF;
+  margin-bottom: 0.5rem;
+}
+
+.ecosystemList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ecosystemItem {
+  background: rgba(30, 14, 111, 0.05);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+}
+
 .evolutionList {
   display: flex;
   flex-direction: column;

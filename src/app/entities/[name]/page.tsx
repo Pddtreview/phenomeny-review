@@ -129,10 +129,19 @@ export default async function EntityPage({ params }: EntityPageProps) {
     notFound();
   }
 
-  const [articles, timeline, evolution] = await Promise.all([
+  const isModel = entity.type === "model" && entity.parent_id;
+  const isCompany = entity.type === "company";
+
+  const [articles, timeline, evolution, parentCompany, siblings] = await Promise.all([
     getRelatedArticles(entity.id),
     getTimelineEntries(entity.id),
-    entity.type === "company" ? getEvolutionModels(entity.id) : Promise.resolve([]),
+    isCompany ? getEvolutionModels(entity.id) : Promise.resolve([]),
+    isModel
+      ? supabase.from("entities").select("id, name, slug").eq("id", entity.parent_id).maybeSingle().then(r => r.data)
+      : Promise.resolve(null),
+    isModel
+      ? supabase.from("entities").select("id, name, slug").eq("parent_id", entity.parent_id).eq("type", "model").neq("id", entity.id).then(r => r.data || [])
+      : Promise.resolve([]),
   ]);
 
   const schemaTypeMap: Record<string, string> = {
@@ -217,6 +226,36 @@ export default async function EntityPage({ params }: EntityPageProps) {
               </div>
             ))}
           </div>
+        </section>
+      )}
+
+      {isModel && (parentCompany || siblings.length > 0) && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionHeading}>Ecosystem</h2>
+          {parentCompany && (
+            <p className={styles.ecosystemParent}>
+              Developed by{" "}
+              <Link href={`/entities/${parentCompany.slug}`} className={styles.ecosystemLink}>
+                {parentCompany.name}
+              </Link>
+            </p>
+          )}
+          {siblings.length > 0 && (
+            <div className={styles.ecosystemSiblings}>
+              <p className={styles.ecosystemLabel}>
+                Other models from {parentCompany?.name || "this company"}
+              </p>
+              <ul className={styles.ecosystemList}>
+                {siblings.map((s: any) => (
+                  <li key={s.id} className={styles.ecosystemItem}>
+                    <Link href={`/entities/${s.slug}`} className={styles.ecosystemLink}>
+                      {s.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </section>
       )}
 
