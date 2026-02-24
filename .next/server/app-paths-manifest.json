@@ -1,3 +1,13 @@
 {
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/companies/page": "app/companies/page.js",
+  "/timeline/page": "app/timeline/page.js",
+  "/models/page": "app/models/page.js",
+  "/timeline/[year]/page": "app/timeline/[year]/page.js",
+  "/entities/page": "app/entities/page.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/sitemap.xml/[[...__metadata_id__]]/route": "app/sitemap.xml/[[...__metadata_id__]]/route.js",
+  "/robots.txt/route": "app/robots.txt/route.js",
+  "/api/health/route": "app/api/health/route.js",
+  "/entities/[name]/page": "app/entities/[name]/page.js"
 }
