@@ -38,6 +38,10 @@ export default function AdminPage() {
   const [publishAt, setPublishAt] = useState("");
   const [category, setCategory] = useState("");
 
+  const [ingestUrl, setIngestUrl] = useState("");
+  const [ingesting, setIngesting] = useState(false);
+  const [ingestResult, setIngestResult] = useState<{ success: boolean; message: string } | null>(null);
+
   const [articles, setArticles] = useState<Article[]>([]);
   const [loadingArticles, setLoadingArticles] = useState(true);
   const [busyArticleId, setBusyArticleId] = useState<string | null>(null);
@@ -221,11 +225,72 @@ export default function AdminPage() {
     return parts.join(" ");
   }
 
+  async function handleIngest() {
+    if (!ingestUrl.trim()) return;
+    setIngesting(true);
+    setIngestResult(null);
+
+    try {
+      const res = await fetch("/api/ingest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: ingestUrl.trim() }),
+      });
+
+      const json = await res.json();
+
+      if (!json.success) {
+        setIngestResult({ success: false, message: json.error || "Ingestion failed." });
+      } else {
+        const msg = json.warning
+          ? `Ingested: "${json.article.title}" (warning: ${json.warning})`
+          : `Ingested: "${json.article.title}" + timeline event created`;
+        setIngestResult({ success: true, message: msg });
+        setIngestUrl("");
+        fetchArticles();
+      }
+    } catch {
+      setIngestResult({ success: false, message: "Network error during ingestion." });
+    } finally {
+      setIngesting(false);
+    }
+  }
+
   const isBusy = generating || submitting || !!editing;
 
   return (
     <main className={styles.main}>
-      <h1 className={styles.heading}>New Article</h1>
+      <h1 className={styles.heading}>Admin Dashboard</h1>
+
+      <section className={styles.ingestSection}>
+        <h2 className={styles.ingestHeading}>Intelligence Ingestion</h2>
+        <p className={styles.ingestDescription}>Paste a URL to fetch, analyze, and publish as structured intelligence.</p>
+        <div className={styles.ingestRow}>
+          <input
+            className={styles.input}
+            type="url"
+            placeholder="https://example.com/article..."
+            value={ingestUrl}
+            onChange={(e) => setIngestUrl(e.target.value)}
+            disabled={ingesting}
+          />
+          <button
+            className={styles.ingestButton}
+            type="button"
+            onClick={handleIngest}
+            disabled={ingesting || !ingestUrl.trim()}
+          >
+            {ingesting ? "Ingesting…" : "Ingest"}
+          </button>
+        </div>
+        {ingestResult && (
+          <p className={ingestResult.success ? styles.ingestSuccess : styles.ingestError}>
+            {ingestResult.message}
+          </p>
+        )}
+      </section>
+
+      <h2 className={styles.heading}>New Article</h2>
 
       <div className={styles.generateRow}>
         <input

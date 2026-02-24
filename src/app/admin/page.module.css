@@ -12,6 +12,69 @@
   margin-bottom: 1.5rem;
 }
 
+.ingestSection {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f0edff 0%, #e8faf5 100%);
+  border: 1px solid #d6d0f0;
+  border-radius: 10px;
+}
+
+.ingestHeading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1E0E6F;
+  margin-bottom: 0.25rem;
+}
+
+.ingestDescription {
+  font-size: 0.8rem;
+  color: #6B7280;
+  margin-bottom: 1rem;
+}
+
+.ingestRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ingestButton {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #fff;
+  background: #1E0E6F;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.ingestButton:hover {
+  background: #2a1a8a;
+}
+
+.ingestButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ingestSuccess {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #166534;
+}
+
+.ingestError {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #cf222e;
+}
+
 .generateRow {
   display: flex;
   gap: 0.5rem;
