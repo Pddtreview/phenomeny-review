@@ -20,3 +20,15 @@ body {
   background: rgba(25, 195, 156, 0.2);
   color: #1E0E6F;
 }
+
+.entityLink {
+  color: #19C39C;
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(25, 195, 156, 0.4);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.entityLink:hover {
+  color: #1E0E6F;
+  border-bottom-color: #1E0E6F;
+}

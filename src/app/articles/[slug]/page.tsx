@@ -57,12 +57,49 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   };
 }
 
+async function getAllEntities() {
+  const { data } = await supabase
+    .from("entities")
+    .select("name, slug");
+
+  if (!data) return [];
+  return data as { name: string; slug: string }[];
+}
+
+function linkEntitiesInContent(content: string, entities: { name: string; slug: string }[]): string {
+  if (!entities.length) return content;
+
+  const sorted = [...entities].sort((a, b) => b.name.length - a.name.length);
+  let result = content;
+  const linked = new Set<string>();
+
+  for (const entity of sorted) {
+    if (!entity.name || !entity.slug || linked.has(entity.slug)) continue;
+
+    const escaped = entity.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`(?<![<\\/\\w])\\b(${escaped})\\b(?![^<]*>)`, "");
+
+    const match = result.match(regex);
+    if (match && match.index !== undefined) {
+      const before = result.slice(0, match.index);
+      const after = result.slice(match.index + match[0].length);
+      result = `${before}<a href="/entities/${entity.slug}" class="entityLink">${match[0]}</a>${after}`;
+      linked.add(entity.slug);
+    }
+  }
+
+  return result;
+}
+
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const article = await getArticle(params.slug);
 
   if (!article) {
     notFound();
   }
+
+  const entities = await getAllEntities();
+  const linkedContent = linkEntitiesInContent(article.content, entities);
 
   return (
     <main className={styles.main}>
@@ -78,7 +115,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           day: "numeric",
         })}
       </time>
-      <div className={styles.content}>{article.content}</div>
+      <div
+        className={styles.content}
+        dangerouslySetInnerHTML={{ __html: linkedContent }}
+      />
     </main>
   );
 }
