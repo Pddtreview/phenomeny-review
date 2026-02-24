@@ -11,15 +11,22 @@ interface EntityPageProps {
 }
 
 async function getEntity(name: string) {
-  const decoded = decodeURIComponent(name);
+  const decoded = decodeURIComponent(name).toLowerCase();
 
   const { data, error } = await supabase
     .from("entities")
     .select("*")
     .eq("slug", decoded)
-    .single();
+    .maybeSingle();
 
-  if (error || !data) return null;
+  if (error) {
+    console.error("[entity] Fetch error for slug:", decoded, error.message);
+    return null;
+  }
+  if (!data) {
+    console.log("[entity] No entity found for slug:", decoded);
+    return null;
+  }
   return data;
 }
 
