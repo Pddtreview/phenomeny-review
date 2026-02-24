@@ -1,0 +1,148 @@
+PROJECT CONTEXT — PHENOMENY REVIEW™
+
+We recently attempted to build a new ingestion system.
+
+Current Situation:
+
+• The Admin Dashboard shows the "Intelligence Ingestion" UI section.
+• The frontend is calling POST /api/ingest.
+• In the browser Network tab, the request returns 502 (Bad Gateway).
+• Console shows fetch errors.
+• When checking the project files, /app/api/ingest/route.ts does NOT exist.
+
+Conclusion:
+The frontend is calling an API route that does not exist or is broken.
+This is causing the 502 error.
+
+We need to correctly create the ingestion API route.
+
+IMPORTANT CONSTRAINTS:
+- Do NOT modify frontend layout.
+- Do NOT refactor existing article routes.
+- Do NOT install new npm packages.
+- Do NOT change authentication logic.
+- Only create the missing /api/ingest route.
+- Keep everything server-side.
+- Handle all errors gracefully (no crashes).
+
+TASK:
+
+Create a new file:
+
+/app/api/ingest/route.ts
+
+Requirements:
+
+1. Method: POST
+2. Use existing admin authentication logic.
+   If not authenticated → return 401 JSON.
+
+3. Accept body:
+   { url: string }
+
+4. Validate URL.
+   If invalid → return 400 JSON.
+
+5. Check Supabase:
+   If articles.source_url already exists → return 409 JSON.
+
+6. Fetch the URL using native fetch.
+   If response not OK → return 400 JSON.
+   Do NOT throw uncaught errors.
+
+7. Extract readable text:
+   - Remove <script>, <style>, <nav>, <footer>
+   - Strip HTML tags
+   - Normalize whitespace
+
+8. Send cleaned content to Anthropic using existing client.
+
+Use this SYSTEM_PROMPT:
+
+const SYSTEM_PROMPT = `
+You are an intelligence analysis engine.
+
+Rewrite the provided article into a neutral, analytical intelligence brief.
+
+Remove marketing tone.
+No hype.
+Technical significance.
+Geopolitical impact.
+
+Select category strictly from:
+
+AI
+AI Governance
+AI Operations
+Quantum
+Space
+Biotech
+India–China
+USA Europe
+Intelligence Brief
+
+Return STRICT JSON ONLY:
+
+{
+  "title": "",
+  "content": "",
+  "summary": "",
+  "category": "",
+  "timeline_event": {
+    "entity": "",
+    "date": "",
+    "title": "",
+    "description": ""
+  }
+}
+
+If no timeline_event exists, return null.
+No markdown.
+No commentary.
+Only valid JSON.
+`;
+
+9. Parse AI response safely.
+   If JSON invalid → return 500 JSON.
+
+10. Generate unique slug:
+   - lowercase
+   - hyphenate
+   - remove special chars
+   - check collision and append -2, -3 etc.
+
+11. Insert into articles:
+
+{
+  title,
+  content,
+  slug,
+  status: "published",
+  publish_at: now(),
+  category,
+  source_url
+}
+
+12. If timeline_event exists:
+   Insert into timelines:
+
+{
+  entity,
+  title,
+  description,
+  event_date,
+  source_url,
+  confidence: 0.85
+}
+
+13. Return:
+
+{
+  success: true,
+  slug,
+  article_id
+}
+
+Wrap entire handler in try/catch.
+Never crash the server.
+Always return JSON.

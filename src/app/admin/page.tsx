@@ -242,10 +242,7 @@ export default function AdminPage() {
       if (!json.success) {
         setIngestResult({ success: false, message: json.error || "Ingestion failed." });
       } else {
-        const msg = json.warning
-          ? `Ingested: "${json.article.title}" (warning: ${json.warning})`
-          : `Ingested: "${json.article.title}" + timeline event created`;
-        setIngestResult({ success: true, message: msg });
+        setIngestResult({ success: true, message: `Ingested successfully — slug: ${json.slug}` });
         setIngestUrl("");
         fetchArticles();
       }
