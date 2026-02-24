@@ -38,17 +38,47 @@ export async function generateMetadata({ params }: EntityPageProps): Promise<Met
     return { title: "Entity Not Found" };
   }
 
-  const title = `${entity.name} — AI Intelligence Timeline | Phenomeny Review™`;
-  const description = `Explore ${entity.name}'s AI developments, related articles, research milestones, and innovation timeline.`;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+    || (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : "http://localhost:5000");
+  const canonicalUrl = `${baseUrl}/entities/${entity.slug}`;
+
+  let title: string;
+  let description: string;
+
+  if (entity.type === "company") {
+    title = `${entity.name} — AI Evolution, Models, Timeline | Phenomeny Review`;
+    description = `Explore ${entity.name}'s AI models, release timeline, ecosystem connections, and activity history.`;
+  } else if (entity.type === "model" && entity.parent_id) {
+    const { data: parent } = await supabase
+      .from("entities")
+      .select("name")
+      .eq("id", entity.parent_id)
+      .maybeSingle();
+    const companyName = parent?.name || "Unknown";
+    title = `${entity.name} by ${companyName} — Release History & Timeline | Phenomeny Review`;
+    description = `${entity.name} by ${companyName} — Release history, timeline events, and ecosystem context.`;
+  } else {
+    title = `${entity.name} — AI Intelligence Timeline | Phenomeny Review`;
+    description = `Explore ${entity.name}'s AI developments, related articles, and innovation timeline.`;
+  }
 
   return {
     title,
     description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title,
       description,
+      url: canonicalUrl,
       type: "website",
-      siteName: "Phenomeny Review™",
+      siteName: "Phenomeny Review",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
     },
   };
 }
