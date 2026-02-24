@@ -384,6 +384,14 @@ export default async function EntityPage({ params }: EntityPageProps) {
       <h1 className={styles.heading}>{entity.name}</h1>
       <span className={styles.typeBadge}>{entity.type}</span>
 
+      {entity.summary && (
+        <div className={styles.summaryBlock}>
+          {entity.summary.split(/\n\n+/).map((paragraph: string, i: number) => (
+            <p key={i} className={styles.summaryParagraph}>{paragraph}</p>
+          ))}
+        </div>
+      )}
+
       {snapshot && (
         <section className={styles.snapshotSection}>
           <div className={styles.snapshotGrid}>
