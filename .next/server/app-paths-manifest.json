@@ -1,4 +1,5 @@
 {
   "/page": "app/page.js",
+  "/entities/[name]/page": "app/entities/[name]/page.js",
   "/api/graph/[slug]/route": "app/api/graph/[slug]/route.js"
 }

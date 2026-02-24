@@ -6,6 +6,7 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   const { slug } = params;
+  const includeHistory = _request.nextUrl.searchParams.get("include_history") === "true";
 
   const { data: entity, error: entityError } = await supabase
     .from("entities")
@@ -27,17 +28,19 @@ export async function GET(
     );
   }
 
+  const relSelect = "id, subject_id, object_id, predicate, source_url, confidence, is_active, valid_from, valid_to, created_at, updated_at";
+
+  let outQuery = supabase.from("entity_relationships").select(relSelect).eq("subject_id", entity.id);
+  let inQuery = supabase.from("entity_relationships").select(relSelect).eq("object_id", entity.id);
+
+  if (!includeHistory) {
+    outQuery = outQuery.eq("is_active", true);
+    inQuery = inQuery.eq("is_active", true);
+  }
+
   const [outRes, inRes, timelineRes] = await Promise.all([
-    supabase
-      .from("entity_relationships")
-      .select("id, subject_id, object_id, predicate, source_url, confidence, is_active, valid_from, valid_to, created_at, updated_at")
-      .eq("subject_id", entity.id)
-      .eq("is_active", true),
-    supabase
-      .from("entity_relationships")
-      .select("id, subject_id, object_id, predicate, source_url, confidence, is_active, valid_from, valid_to, created_at, updated_at")
-      .eq("object_id", entity.id)
-      .eq("is_active", true),
+    outQuery,
+    inQuery,
     supabase
       .from("timelines")
       .select("id, title, description, event_date, event_type, source_url, confidence, created_at")
