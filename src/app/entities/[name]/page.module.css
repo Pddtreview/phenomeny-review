@@ -93,6 +93,21 @@
   flex-shrink: 0;
 }
 
+.timelineGroup {
+  margin-bottom: 1.5rem;
+}
+
+.timelineGroupHeading {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #19C39C;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(25, 195, 156, 0.15);
+}
+
 .timelineList {
   list-style: none;
   padding: 0;

@@ -152,27 +152,67 @@ export default async function EntityPage({ params }: EntityPageProps) {
         {timeline.length === 0 ? (
           <p className={styles.empty}>No timeline events found.</p>
         ) : (
-          <ul className={styles.timelineList}>
-            {timeline.map((event: any) => (
-              <li key={event.id} className={styles.timelineItem}>
-                <span className={styles.timelineDate}>
-                  {event.event_date
-                    ? new Date(event.event_date).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })
-                    : "—"}
-                </span>
-                <div className={styles.timelineContent}>
-                  <strong className={styles.timelineTitle}>{event.title}</strong>
-                  {event.description && (
-                    <p className={styles.timelineDescription}>{event.description}</p>
-                  )}
+          (() => {
+            const EVENT_TYPE_ORDER = [
+              "release", "upgrade", "security", "regulation", "funding",
+              "partnership", "leadership", "research", "infrastructure", "other",
+            ];
+            const EVENT_TYPE_LABELS: Record<string, string> = {
+              release: "Releases",
+              upgrade: "Upgrades",
+              security: "Security",
+              regulation: "Regulation",
+              funding: "Funding",
+              partnership: "Partnerships",
+              leadership: "Leadership",
+              research: "Research",
+              infrastructure: "Infrastructure",
+              other: "Other",
+            };
+            const grouped: Record<string, any[]> = {};
+            for (const event of timeline) {
+              const type = event.event_type || "other";
+              if (!grouped[type]) grouped[type] = [];
+              grouped[type].push(event);
+            }
+            for (const type of Object.keys(grouped)) {
+              grouped[type].sort((a: any, b: any) => {
+                const da = a.event_date ? new Date(a.event_date).getTime() : 0;
+                const db = b.event_date ? new Date(b.event_date).getTime() : 0;
+                return db - da;
+              });
+            }
+            return EVENT_TYPE_ORDER
+              .filter((type) => grouped[type] && grouped[type].length > 0)
+              .map((type) => (
+                <div key={type} className={styles.timelineGroup}>
+                  <h3 className={styles.timelineGroupHeading}>
+                    {EVENT_TYPE_LABELS[type] || type}
+                  </h3>
+                  <ul className={styles.timelineList}>
+                    {grouped[type].map((event: any) => (
+                      <li key={event.id} className={styles.timelineItem}>
+                        <span className={styles.timelineDate}>
+                          {event.event_date
+                            ? new Date(event.event_date).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })
+                            : "—"}
+                        </span>
+                        <div className={styles.timelineContent}>
+                          <strong className={styles.timelineTitle}>{event.title}</strong>
+                          {event.description && (
+                            <p className={styles.timelineDescription}>{event.description}</p>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </li>
-            ))}
-          </ul>
+              ));
+          })()
         )}
       </section>
     </main>
