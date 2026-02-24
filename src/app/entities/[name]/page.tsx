@@ -373,11 +373,31 @@ export default async function EntityPage({ params }: EntityPageProps) {
     }
   }
 
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": baseUrl },
+      ...(entity.type === "model" && parentCompany
+        ? [
+            { "@type": "ListItem", "position": 2, "name": parentCompany.name, "item": `${baseUrl}/entities/${parentCompany.slug}` },
+            { "@type": "ListItem", "position": 3, "name": entity.name, "item": `${baseUrl}/entities/${entity.slug}` },
+          ]
+        : [
+            { "@type": "ListItem", "position": 2, "name": entity.name, "item": `${baseUrl}/entities/${entity.slug}` },
+          ]),
+    ],
+  };
+
   return (
     <main className={styles.main}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       <Link href="/" className={styles.back}>← Home</Link>
 
