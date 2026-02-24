@@ -11,48 +11,6 @@
       "static/chunks/main-app.js",
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
-    ],
-    "/companies/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/companies/page.css",
-      "static/chunks/app/companies/page.js"
-    ],
-    "/models/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/models/page.css",
-      "static/chunks/app/models/page.js"
-    ],
-    "/timeline/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/timeline/page.css",
-      "static/chunks/app/timeline/page.js"
-    ],
-    "/timeline/[year]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/timeline/[year]/page.css",
-      "static/chunks/app/timeline/[year]/page.js"
-    ],
-    "/entities/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/entities/page.css",
-      "static/chunks/app/entities/page.js"
-    ],
-    "/admin/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/admin/login/page.css",
-      "static/chunks/app/admin/login/page.js"
-    ],
-    "/entities/[name]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/entities/[name]/page.css",
-      "static/chunks/app/entities/[name]/page.js"
     ]
   }
 }

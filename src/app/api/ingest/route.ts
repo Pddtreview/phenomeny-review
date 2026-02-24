@@ -614,6 +614,123 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const ALLOWED_PREDICATES = [
+      "partnered_with",
+      "acquired",
+      "invested_in",
+      "competes_with",
+      "developed",
+      "regulates",
+      "funded_by",
+      "subsidiary_of",
+      "spun_off",
+      "collaborated_with",
+      "supplies_to",
+      "licensed_from",
+    ];
+
+    if (parsed.entities && Array.isArray(parsed.entities) && parsed.entities.length >= 2) {
+      const entityNames = parsed.entities
+        .map((e: { name: string }) => normalizeEntityName(e.name || ""))
+        .filter(Boolean);
+
+      if (entityNames.length >= 2) {
+        try {
+          const relPrompt = `From the following article text and list of entities, extract relationships between entities.
+
+Entities: ${entityNames.join(", ")}
+
+Allowed predicates (use ONLY these):
+${ALLOWED_PREDICATES.join(", ")}
+
+Return STRICT JSON array only. No markdown. No commentary.
+Each element: {"subject": "", "predicate": "", "object": "", "confidence": 0.0}
+
+Rules:
+- subject and object MUST be from the entity list above
+- predicate MUST be from the allowed list
+- confidence between 0.0 and 1.0
+- If no relationships exist, return []
+
+Article text:
+${parsed.content.slice(0, 3000)}`;
+
+          const relResponse = await anthropicClient.post("/messages", {
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 800,
+            system: "You extract entity relationships from text. Return only valid JSON arrays. No markdown.",
+            messages: [{ role: "user", content: relPrompt }],
+          });
+
+          const relRaw = relResponse.data?.content?.[0]?.text;
+          if (relRaw) {
+            const cleaned = relRaw.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
+            const relationships = JSON.parse(cleaned);
+
+            if (Array.isArray(relationships)) {
+              for (const rel of relationships) {
+                if (!rel.subject || !rel.predicate || !rel.object) continue;
+                if (!ALLOWED_PREDICATES.includes(rel.predicate)) continue;
+
+                const subjectName = normalizeEntityName(rel.subject);
+                const objectName = normalizeEntityName(rel.object);
+                if (!subjectName || !objectName) continue;
+
+                const subjectSlug = subjectName.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
+                const objectSlug = objectName.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
+
+                const [subjectRes, objectRes] = await Promise.all([
+                  supabase.from("entities").select("id").eq("slug", subjectSlug).limit(1).single(),
+                  supabase.from("entities").select("id").eq("slug", objectSlug).limit(1).single(),
+                ]);
+
+                if (!subjectRes.data || !objectRes.data) {
+                  console.warn("[ingest] Relationship entity not found:", subjectName, "or", objectName);
+                  continue;
+                }
+
+                const subjectId = subjectRes.data.id;
+                const objectId = objectRes.data.id;
+                const confidence = typeof rel.confidence === "number" ? Math.min(1, Math.max(0, rel.confidence)) : 0.7;
+
+                const { data: existingRel } = await supabase
+                  .from("entity_relationships")
+                  .select("id")
+                  .eq("subject_id", subjectId)
+                  .eq("object_id", objectId)
+                  .eq("predicate", rel.predicate)
+                  .eq("source_url", url)
+                  .limit(1);
+
+                if (existingRel && existingRel.length > 0) {
+                  console.log("[ingest] Relationship already exists:", subjectName, rel.predicate, objectName);
+                  continue;
+                }
+
+                const { error: relInsertError } = await supabase
+                  .from("entity_relationships")
+                  .insert({
+                    subject_id: subjectId,
+                    object_id: objectId,
+                    predicate: rel.predicate,
+                    source_url: url,
+                    confidence,
+                  });
+
+                if (relInsertError) {
+                  console.error("[ingest] Relationship insert failed:", relInsertError.message);
+                } else {
+                  console.log("[ingest] Relationship created:", subjectName, rel.predicate, objectName);
+                }
+              }
+            }
+          }
+        } catch (relErr: any) {
+          console.error("[ingest] Relationship extraction failed:", relErr.message);
+        }
+      }
+    }
+
     console.log(
       "[ingest] timeline_event raw object:",
       JSON.stringify(parsed.timeline_event, null, 2)
