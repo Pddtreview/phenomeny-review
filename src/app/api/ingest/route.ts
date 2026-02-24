@@ -424,6 +424,7 @@ export async function POST(request: NextRequest) {
     }
 
     const modelEntities: { id: string; name: string }[] = [];
+    let firstCompanyId: string | null = null;
     let firstCompanyName: string | null = null;
 
     if (parsed.entities && Array.isArray(parsed.entities) && parsed.entities.length > 0) {
@@ -494,7 +495,8 @@ export async function POST(request: NextRequest) {
         if (entity.type === "model") {
           modelEntities.push({ id: entityId, name: entityName });
         }
-        if (entity.type === "company" && !firstCompanyName) {
+        if (entity.type === "company" && !firstCompanyId) {
+          firstCompanyId = entityId;
           firstCompanyName = entityName;
         }
 
@@ -512,35 +514,29 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      if (firstCompanyName && modelEntities.length > 0) {
-        const companySlug = firstCompanyName
-          .toLowerCase()
-          .trim()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, "")
-          .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "");
+      if (firstCompanyId && modelEntities.length > 0) {
+        for (const model of modelEntities) {
+          console.log("[ingest] Attempting parent linkage:");
+          console.log("Model ID:", model.id);
+          console.log("Model Name:", model.name);
+          console.log("Company ID:", firstCompanyId);
+          console.log("Company Name:", firstCompanyName);
 
-        const { data: companyEntity } = await supabase
-          .from("entities")
-          .select("id")
-          .eq("slug", companySlug)
-          .limit(1)
-          .single();
+          const { data: updateResult, error: parentError } = await supabase
+            .from("entities")
+            .update({ parent_id: firstCompanyId })
+            .eq("id", model.id)
+            .is("parent_id", null)
+            .select("id, parent_id");
 
-        if (companyEntity) {
-          for (const model of modelEntities) {
-            const { error: parentError } = await supabase
-              .from("entities")
-              .update({ parent_id: companyEntity.id })
-              .eq("id", model.id)
-              .is("parent_id", null);
+          console.log("[ingest] Parent linkage result:", JSON.stringify(updateResult));
 
-            if (parentError) {
-              console.error(`[ingest] Parent link failed for ${model.name}:`, parentError.message);
-            } else {
-              console.log(`[ingest] Linked model ${model.name} to parent ${firstCompanyName}`);
-            }
+          if (parentError) {
+            console.error(`[ingest] Parent link failed for ${model.name}:`, parentError.message);
+          } else if (updateResult && updateResult.length > 0) {
+            console.log(`[ingest] Linked model ${model.name} to parent ${firstCompanyName}`);
+          } else {
+            console.log(`[ingest] Parent linkage skipped for ${model.name} (parent_id already set)`);
           }
         }
       }
