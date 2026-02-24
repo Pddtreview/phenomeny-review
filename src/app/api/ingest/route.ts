@@ -43,7 +43,8 @@ Return STRICT JSON ONLY:
     "entity": "",
     "date": "",
     "title": "",
-    "description": ""
+    "description": "",
+    "event_type": "release | upgrade | security | regulation | funding | partnership | leadership | research | infrastructure | other"
   }
 }
 
@@ -118,6 +119,7 @@ interface AiResult {
     date: string;
     title: string;
     description: string;
+    event_type?: string;
   } | null;
 }
 
@@ -484,7 +486,25 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const ALLOWED_EVENT_TYPES = [
+      "release",
+      "upgrade",
+      "security",
+      "regulation",
+      "funding",
+      "partnership",
+      "leadership",
+      "research",
+      "infrastructure",
+      "other"
+    ];
+
     if (parsed.timeline_event && parsed.timeline_event.entity) {
+      let eventType = parsed.timeline_event.event_type || "other";
+      if (!ALLOWED_EVENT_TYPES.includes(eventType)) {
+        eventType = "other";
+      }
+
       const { error: timelineError } = await supabase
         .from("timelines")
         .insert({
@@ -492,6 +512,7 @@ export async function POST(request: NextRequest) {
           title: parsed.timeline_event.title,
           description: parsed.timeline_event.description,
           event_date: parsed.timeline_event.date,
+          event_type: eventType,
           source_url: url,
           confidence: 0.85,
         });
