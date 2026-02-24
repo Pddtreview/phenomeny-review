@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import styles from "./page.module.css";
 import EcosystemGraph from "@/components/ecosystem-graph";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 interface EntityPageProps {
   params: { name: string };
