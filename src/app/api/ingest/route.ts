@@ -337,13 +337,26 @@ export async function POST(request: NextRequest) {
     console.log("[ingest] Article inserted successfully, id:", articleData.id);
 
     const VALID_ENTITY_TYPES = ["company", "model", "country", "lab", "regulator"];
+    const CORPORATE_SUFFIXES = /\s+(Inc\.?|Corporation|Corp\.?|Ltd\.?|LLC|Plc|PLC)$/i;
+
+    function normalizeEntityName(raw: string): string {
+      let name = raw.trim();
+      name = name.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+      name = name.replace(CORPORATE_SUFFIXES, "");
+      name = name.replace(/[,.\s]+$/, "");
+      name = name.replace(/\s+/g, " ").trim();
+      return name;
+    }
 
     if (parsed.entities && Array.isArray(parsed.entities) && parsed.entities.length > 0) {
       for (const entity of parsed.entities) {
         if (!entity.name || typeof entity.name !== "string" || !entity.name.trim()) continue;
         if (!entity.type || !VALID_ENTITY_TYPES.includes(entity.type)) continue;
 
-        const entityName = entity.name.trim();
+        const entityName = normalizeEntityName(entity.name);
+        console.log("[ingest] Normalized entity:", entityName);
+
+        if (!entityName) continue;
 
         const { data: existingEntity } = await supabase
           .from("entities")
