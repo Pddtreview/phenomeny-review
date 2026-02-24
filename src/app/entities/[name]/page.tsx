@@ -171,6 +171,7 @@ export default async function EntityPage({ params }: EntityPageProps) {
     latestModelName: string | null;
     totalTimelineEvents: number;
     mostRecentActivity: string | null;
+    avgReleaseInterval: number | null;
   } | null = null;
 
   let crossCompanyExposure: { id: string; name: string; slug: string; frequency: number }[] = [];
@@ -199,6 +200,17 @@ export default async function EntityPage({ params }: EntityPageProps) {
       new Date(a.first_event).getTime() - new Date(b.first_event).getTime()
     );
 
+    let avgReleaseInterval: number | null = null;
+    if (sorted.length >= 2) {
+      const timestamps = sorted.map((m: any) => new Date(m.first_event).getTime());
+      let totalMs = 0;
+      for (let i = 1; i < timestamps.length; i++) {
+        totalMs += timestamps[i] - timestamps[i - 1];
+      }
+      const avgMs = totalMs / (timestamps.length - 1);
+      avgReleaseInterval = Math.round(avgMs / (1000 * 60 * 60 * 24 * 30.44));
+    }
+
     snapshot = {
       totalModels: evolution.length,
       firstModelYear: sorted.length > 0
@@ -213,6 +225,7 @@ export default async function EntityPage({ params }: EntityPageProps) {
             day: "numeric",
           })
         : null,
+      avgReleaseInterval,
     };
 
     const yearMap: Record<string, Set<string>> = {};
@@ -318,6 +331,12 @@ export default async function EntityPage({ params }: EntityPageProps) {
               <div className={styles.snapshotCard}>
                 <span className={styles.snapshotValue}>{snapshot.mostRecentActivity}</span>
                 <span className={styles.snapshotLabel}>Most Recent Activity</span>
+              </div>
+            )}
+            {snapshot.avgReleaseInterval !== null && (
+              <div className={styles.snapshotCard}>
+                <span className={styles.snapshotValue}>{snapshot.avgReleaseInterval} months</span>
+                <span className={styles.snapshotLabel}>Avg Release Interval</span>
               </div>
             )}
           </div>
