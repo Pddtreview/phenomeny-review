@@ -189,12 +189,49 @@ export default async function EntityPage({ params }: EntityPageProps) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
     || (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : "http://localhost:5000");
 
-  const jsonLd = {
+  const jsonLd: Record<string, any> = {
     "@context": "https://schema.org",
     "@type": schemaTypeMap[entity.type] || "Thing",
     "name": entity.name,
     "url": `${baseUrl}/entities/${entity.slug}`,
   };
+
+  if (isCompany) {
+    if (evolution.length > 0) {
+      jsonLd.hasPart = evolution.map((m: any) => ({
+        "@type": "SoftwareApplication",
+        "name": m.name,
+        "url": `${baseUrl}/entities/${m.slug}`,
+        ...(m.first_event ? { "datePublished": m.first_event } : {}),
+      }));
+
+      const withDatesForSchema = evolution.filter((m: any) => m.first_event);
+      if (withDatesForSchema.length > 0) {
+        const sortedForSchema = [...withDatesForSchema].sort((a: any, b: any) =>
+          new Date(a.first_event).getTime() - new Date(b.first_event).getTime()
+        );
+        jsonLd.foundingDate = sortedForSchema[0].first_event;
+      }
+    }
+    jsonLd.sameAs = [];
+  }
+
+  if (isModel) {
+    if (parentCompany) {
+      jsonLd.isPartOf = {
+        "@type": "Organization",
+        "name": parentCompany.name,
+        "url": `${baseUrl}/entities/${parentCompany.slug}`,
+      };
+    }
+    const modelTimeline = timeline.filter((t: any) => t.event_date);
+    if (modelTimeline.length > 0) {
+      const sortedTimeline = [...modelTimeline].sort((a: any, b: any) =>
+        new Date(a.event_date).getTime() - new Date(b.event_date).getTime()
+      );
+      jsonLd.datePublished = sortedTimeline[0].event_date;
+    }
+  }
 
   let snapshot: {
     totalModels: number;
@@ -325,6 +362,14 @@ export default async function EntityPage({ params }: EntityPageProps) {
             .sort((a: any, b: any) => b.frequency - a.frequency);
         }
       }
+    }
+
+    if (crossCompanyExposure.length > 0) {
+      jsonLd.mentions = crossCompanyExposure.map((c: any) => ({
+        "@type": "Organization",
+        "name": c.name,
+        "url": `${baseUrl}/entities/${c.slug}`,
+      }));
     }
   }
 
