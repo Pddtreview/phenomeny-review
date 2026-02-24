@@ -431,6 +431,14 @@ export default function AdminPage() {
                   </span>
                 </div>
                 <div className={styles.articleActions}>
+                  <a
+                    href={`/articles/${article.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.actionButton}
+                  >
+                    View
+                  </a>
                   <Link href={`/admin/edit/${article.id}`} className={styles.actionButton}>
                     Edit
                   </Link>
