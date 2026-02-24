@@ -142,10 +142,27 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
       }
 
       for (const n of ns) {
+        if (n.type === "company") {
+          n.x = cx; n.y = cy;
+          n.vx = 0; n.vy = 0;
+          continue;
+        }
+
         n.vx += (cx - n.x) * 0.001;
         n.vy += (cy - n.y) * 0.001;
         n.vx *= 0.9; n.vy *= 0.9;
         n.x += n.vx; n.y += n.vy;
+
+        const dx = n.x - cx;
+        const dy = n.y - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const [minR, maxR] = n.type === "model" ? [120, 160] : [200, 260];
+        if (dist < minR || dist > maxR) {
+          const clamped = Math.max(minR, Math.min(maxR, dist));
+          n.x = cx + (dx / dist) * clamped;
+          n.y = cy + (dy / dist) * clamped;
+        }
+
         const pad = n.radius + 5;
         n.x = Math.max(pad, Math.min(width - pad, n.x));
         n.y = Math.max(pad, Math.min(height - pad, n.y));
