@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { supabase } from "@/lib/supabase";
 import ArticleFeed from "@/components/article-feed";
 import SubscribeForm from "@/components/subscribe-form";
 import styles from "./page.module.css";
@@ -16,18 +17,30 @@ interface Article {
 }
 
 async function fetchArticles(): Promise<{ data: Article[] | null; error: string | null }> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
-    || (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : "http://localhost:5000");
-
   try {
-    const res = await fetch(`${baseUrl}/api/articles`, { cache: "no-store" });
-    const json = await res.json();
+    const nowISO = new Date().toISOString();
 
-    if (!json.success) {
-      return { data: null, error: json.error || "Failed to fetch articles." };
+    const { data, error } = await supabase
+      .from("articles")
+      .select("*")
+      .or("status.eq.published,status.eq.scheduled")
+      .lte("publish_at", nowISO)
+      .order("publish_at", { ascending: false });
+
+    if (error) {
+      return { data: null, error: error.message };
     }
 
-    return { data: json.data, error: null };
+    const dueScheduled = (data || []).filter((a: any) => a.status === "scheduled");
+    if (dueScheduled.length > 0) {
+      const ids = dueScheduled.map((a: any) => a.id);
+      await supabase
+        .from("articles")
+        .update({ status: "published" })
+        .in("id", ids);
+    }
+
+    return { data: data as Article[], error: null };
   } catch (err: any) {
     return { data: null, error: err?.message || "Failed to fetch articles." };
   }
