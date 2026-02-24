@@ -48,6 +48,23 @@ Return STRICT JSON ONLY:
   }
 }
 
+You MUST always return event_type in timeline_event.
+Do NOT invent new labels.
+Choose the closest match from the allowed values.
+If uncertain, use "other".
+
+event_type MUST be one of:
+- release → new product or model launch
+- upgrade → major version improvement
+- security → breach, vulnerability, or data issue
+- regulation → government action or policy
+- funding → investment or financial event
+- partnership → collaboration between entities
+- leadership → CEO change or executive shift
+- research → published breakthrough or paper
+- infrastructure → data centers, compute expansion
+- other → none of the above
+
 If no timeline_event exists, set timeline_event to null.
 No markdown.
 No commentary.
