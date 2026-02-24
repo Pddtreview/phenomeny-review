@@ -436,10 +436,18 @@ export async function POST(request: NextRequest) {
 
         if (!entityName) continue;
 
+        const entitySlug = entityName
+          .toLowerCase()
+          .trim()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
+
         const { data: existingEntity } = await supabase
           .from("entities")
           .select("id")
-          .eq("name", entityName)
+          .eq("slug", entitySlug)
           .limit(1)
           .single();
 
@@ -450,7 +458,7 @@ export async function POST(request: NextRequest) {
         } else {
           const { data: newEntity, error: insertEntityError } = await supabase
             .from("entities")
-            .insert({ name: entityName, type: entity.type })
+            .insert({ name: entityName, slug: entitySlug, type: entity.type })
             .select("id")
             .single();
 

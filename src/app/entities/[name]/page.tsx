@@ -15,7 +15,7 @@ async function getEntity(name: string) {
   const { data, error } = await supabase
     .from("entities")
     .select("*")
-    .eq("name", decoded)
+    .eq("slug", decoded)
     .single();
 
   if (error || !data) return null;
