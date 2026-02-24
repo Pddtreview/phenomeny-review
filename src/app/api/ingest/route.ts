@@ -531,6 +531,32 @@ export async function POST(request: NextRequest) {
           console.log(`[ingest] Parent linkage complete: ${updateResult?.length || 0} models linked`);
         }
       }
+
+      for (const modelId of modelEntityIds) {
+        const { data: existingTimeline } = await supabase
+          .from("timelines")
+          .select("id")
+          .eq("entity", modelId)
+          .limit(1);
+
+        if (!existingTimeline || existingTimeline.length === 0) {
+          const { error: fallbackError } = await supabase
+            .from("timelines")
+            .insert({
+              entity: modelId,
+              event_type: "first_appearance",
+              event_date: new Date().toISOString(),
+              title: "First appearance in repository",
+              description: parsed.title || "",
+            });
+
+          if (fallbackError) {
+            console.error("[ingest] Fallback timeline insert failed for model", modelId, fallbackError.message);
+          } else {
+            console.log("[ingest] Fallback timeline created for model:", modelId);
+          }
+        }
+      }
     }
 
     console.log(
