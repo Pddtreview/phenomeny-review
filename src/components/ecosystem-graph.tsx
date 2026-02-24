@@ -188,14 +188,20 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
         </div>
       )}
       <svg ref={svgRef} width={dims.width} height={dims.height} className={styles.svg}>
-        {ready && graph && graph.edges.map((e) => (
-          <line
-            key={`${e.source}-${e.target}`}
-            data-edge={`${e.source}-${e.target}`}
-            stroke="#E5E7EB"
-            strokeWidth={1}
-          />
-        ))}
+        {ready && graph && graph.edges.map((e) => {
+          const targetNode = graph.nodes.find(n => n.id === e.target);
+          const isModel = targetNode?.type === "model";
+          return (
+            <line
+              key={`${e.source}-${e.target}`}
+              data-edge={`${e.source}-${e.target}`}
+              stroke={isModel ? "#19C39C" : "#0D9488"}
+              strokeWidth={1}
+              strokeDasharray={isModel ? "none" : "5,4"}
+              opacity={0.6}
+            />
+          );
+        })}
         {ready && graph && graph.nodes.map((node) => (
           <g
             key={node.id}
