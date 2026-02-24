@@ -66,6 +66,44 @@ async function getRelatedArticles(entityId: string) {
   return articles;
 }
 
+async function getEvolutionModels(companyId: string) {
+  const { data: models, error } = await supabase
+    .from("entities")
+    .select("id, name, slug, created_at")
+    .eq("parent_id", companyId)
+    .eq("type", "model");
+
+  if (error || !models || models.length === 0) return [];
+
+  const modelIds = models.map((m: any) => m.id);
+
+  const { data: timelineRows } = await supabase
+    .from("timelines")
+    .select("entity, event_date")
+    .in("entity", modelIds)
+    .order("event_date", { ascending: true });
+
+  const firstEventMap: Record<string, string> = {};
+  if (timelineRows) {
+    for (const row of timelineRows) {
+      if (!firstEventMap[row.entity]) {
+        firstEventMap[row.entity] = row.event_date;
+      }
+    }
+  }
+
+  return models
+    .map((m: any) => ({
+      ...m,
+      first_event: firstEventMap[m.id] || null,
+    }))
+    .sort((a: any, b: any) => {
+      const da = a.first_event ? new Date(a.first_event).getTime() : Infinity;
+      const db = b.first_event ? new Date(b.first_event).getTime() : Infinity;
+      return da - db;
+    });
+}
+
 async function getTimelineEntries(entityId: string) {
   const { data, error } = await supabase
     .from("timelines")
@@ -84,9 +122,10 @@ export default async function EntityPage({ params }: EntityPageProps) {
     notFound();
   }
 
-  const [articles, timeline] = await Promise.all([
+  const [articles, timeline, evolution] = await Promise.all([
     getRelatedArticles(entity.id),
     getTimelineEntries(entity.id),
+    entity.type === "company" ? getEvolutionModels(entity.id) : Promise.resolve([]),
   ]);
 
   const schemaTypeMap: Record<string, string> = {
@@ -146,6 +185,33 @@ export default async function EntityPage({ params }: EntityPageProps) {
           </ul>
         )}
       </section>
+
+      {entity.type === "company" && evolution.length > 0 && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionHeading}>Evolution</h2>
+          <div className={styles.evolutionList}>
+            {evolution.map((model: any) => (
+              <div key={model.id} className={styles.evolutionItem}>
+                <span className={styles.evolutionDot} />
+                <div className={styles.evolutionContent}>
+                  <Link href={`/entities/${model.slug}`} className={styles.evolutionName}>
+                    {model.name}
+                  </Link>
+                  <span className={styles.evolutionDate}>
+                    {model.first_event
+                      ? new Date(model.first_event).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })
+                      : "—"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className={styles.section}>
         <h2 className={styles.sectionHeading}>Timeline</h2>
