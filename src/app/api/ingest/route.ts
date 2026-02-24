@@ -121,7 +121,23 @@ interface AiResult {
   } | null;
 }
 
+async function logIngestion(source_url: string, status: string, startTime: number, error_message?: string) {
+  try {
+    await supabase.from("ingestion_logs").insert({
+      source_url,
+      status,
+      processing_time_ms: Date.now() - startTime,
+      ...(error_message ? { error_message } : {}),
+    });
+    console.log("[ingest] Logged:", status);
+  } catch (e) {
+    console.error("[ingest] Failed to write ingestion log:", e);
+  }
+}
+
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+
   try {
     if (!checkAuth(request)) {
       return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
@@ -152,6 +168,7 @@ export async function POST(request: NextRequest) {
       .limit(1);
 
     if (existing && existing.length > 0) {
+      await logIngestion(url, "duplicate", startTime);
       return NextResponse.json(
         {
           success: false,
@@ -173,6 +190,7 @@ export async function POST(request: NextRequest) {
         signal: AbortSignal.timeout(15000),
       });
     } catch (err: any) {
+      await logIngestion(url, "fetch_error", startTime, err.message);
       return NextResponse.json(
         { success: false, error: `Failed to fetch URL: ${err.message}` },
         { status: 400 }
@@ -180,8 +198,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!fetchRes.ok) {
+      const errMsg = `URL returned ${fetchRes.status} ${fetchRes.statusText}`;
+      await logIngestion(url, "fetch_error", startTime, errMsg);
       return NextResponse.json(
-        { success: false, error: `URL returned ${fetchRes.status} ${fetchRes.statusText}` },
+        { success: false, error: errMsg },
         { status: 400 }
       );
     }
@@ -190,6 +210,7 @@ export async function POST(request: NextRequest) {
     const cleanedText = stripHtml(html).slice(0, 15000);
 
     if (cleanedText.length < 100) {
+      await logIngestion(url, "fetch_error", startTime, "Extracted text too short");
       return NextResponse.json(
         { success: false, error: "Extracted text too short — possibly paywalled or empty page." },
         { status: 422 }
@@ -197,6 +218,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!ANTHROPIC_API_KEY) {
+      await logIngestion(url, "ai_validation_error", startTime, "ANTHROPIC_API_KEY not configured");
       return NextResponse.json(
         { success: false, error: "ANTHROPIC_API_KEY is not configured." },
         { status: 500 }
@@ -219,6 +241,7 @@ export async function POST(request: NextRequest) {
 
       aiRaw = response.data?.content?.[0]?.text;
       if (!aiRaw) {
+        await logIngestion(url, "ai_validation_error", startTime, "Empty response from Anthropic");
         return NextResponse.json(
           { success: false, error: "Empty response from Anthropic." },
           { status: 500 }
@@ -226,6 +249,7 @@ export async function POST(request: NextRequest) {
       }
     } catch (err: any) {
       const msg = err.response?.data?.error?.message || err.message || "Unknown Anthropic error";
+      await logIngestion(url, "ai_validation_error", startTime, msg);
       return NextResponse.json(
         { success: false, error: `AI request failed: ${msg}` },
         { status: 500 }
@@ -237,6 +261,7 @@ export async function POST(request: NextRequest) {
       const cleaned = aiRaw.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
       parsed = JSON.parse(cleaned);
     } catch {
+      await logIngestion(url, "ai_validation_error", startTime, "Failed to parse AI response as JSON");
       return NextResponse.json(
         { success: false, error: "Failed to parse AI response as JSON." },
         { status: 500 }
@@ -244,6 +269,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!parsed.title || !parsed.content) {
+      await logIngestion(url, "ai_validation_error", startTime, "AI response missing required title or content");
       return NextResponse.json(
         { success: false, error: "AI response missing required title or content." },
         { status: 500 }
@@ -272,6 +298,7 @@ export async function POST(request: NextRequest) {
 
     if (articleError) {
       console.error("[ingest] Article insert error:", JSON.stringify(articleError, null, 2));
+      await logIngestion(url, "insert_error", startTime, articleError.message);
       return NextResponse.json(
         { success: false, error: `Article insert failed: ${articleError.message}` },
         { status: 500 }
@@ -346,6 +373,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    await logIngestion(url, "success", startTime);
+
     return NextResponse.json({
       success: true,
       slug,
@@ -354,6 +383,8 @@ export async function POST(request: NextRequest) {
     });
   } catch (err: any) {
     console.error("Ingest error:", err);
+    const sourceUrl = (err as any)?._sourceUrl || "unknown";
+    await logIngestion(sourceUrl, "internal_error", startTime, err.message || "Unknown error");
     return NextResponse.json(
       { success: false, error: "Internal server error." },
       { status: 500 }
