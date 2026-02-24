@@ -56,27 +56,64 @@ export async function GET(
   ]);
 
   const allRels = [...(outRes.data || []), ...(inRes.data || [])];
+  const timelineEvents = timelineRes.data || [];
 
   let claimMap: Record<string, ClaimInfo> = {};
-  if (allRels.length > 0) {
-    const { data: claims } = await supabase
-      .from("claims")
-      .select("subject_id, object_id, predicate, revision, verification_status, confidence, created_at")
-      .eq("claim_type", "relationship")
-      .eq("is_current", true);
+  let timelineClaimMap: Record<string, ClaimInfo> = {};
 
-    if (claims) {
-      for (const c of claims) {
-        const key = `${c.subject_id}|${c.object_id}|${c.predicate}`;
-        claimMap[key] = {
-          revision: c.revision,
-          verification_status: c.verification_status,
-          confidence: c.confidence,
-          created_at: c.created_at,
-        };
-      }
-    }
+  const claimFetches: Promise<void>[] = [];
+
+  if (allRels.length > 0) {
+    claimFetches.push(
+      supabase
+        .from("claims")
+        .select("subject_id, object_id, predicate, revision, verification_status, confidence, created_at")
+        .eq("claim_type", "relationship")
+        .eq("is_current", true)
+        .then(({ data: claims }) => {
+          if (claims) {
+            for (const c of claims) {
+              const key = `${c.subject_id}|${c.object_id}|${c.predicate}`;
+              claimMap[key] = {
+                revision: c.revision,
+                verification_status: c.verification_status,
+                confidence: c.confidence,
+                created_at: c.created_at,
+              };
+            }
+          }
+        })
+    );
   }
+
+  if (timelineEvents.length > 0) {
+    claimFetches.push(
+      supabase
+        .from("claims")
+        .select("subject_id, structured_payload, revision, verification_status, confidence, created_at")
+        .eq("claim_type", "timeline")
+        .eq("is_current", true)
+        .eq("subject_id", entity.id)
+        .then(({ data: claims }) => {
+          if (claims) {
+            for (const c of claims) {
+              const p = c.structured_payload as Record<string, string> | null;
+              if (p) {
+                const key = `${c.subject_id}|${p.event_type}|${p.event_date}|${p.title}`;
+                timelineClaimMap[key] = {
+                  revision: c.revision,
+                  verification_status: c.verification_status,
+                  confidence: c.confidence,
+                  created_at: c.created_at,
+                };
+              }
+            }
+          }
+        })
+    );
+  }
+
+  await Promise.all(claimFetches);
 
   const outIds = new Set<string>();
   const inIds = new Set<string>();
@@ -126,10 +163,26 @@ export async function GET(
     subject: relatedEntities[r.subject_id] || null,
   }));
 
+  const timeline = timelineEvents.map((t: any) => {
+    const key = `${entity.id}|${t.event_type}|${t.event_date}|${t.title}`;
+    const claim = timelineClaimMap[key] || null;
+    return {
+      ...t,
+      claim: claim
+        ? {
+            revision: claim.revision,
+            verification_status: claim.verification_status,
+            confidence: claim.confidence,
+            created_at: claim.created_at,
+          }
+        : null,
+    };
+  });
+
   return NextResponse.json({
     entity,
     relationships_out: relationshipsOut,
     relationships_in: relationshipsIn,
-    timeline: timelineRes.data || [],
+    timeline,
   });
 }

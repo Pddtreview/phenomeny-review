@@ -1,6 +1,4 @@
 {
   "/page": "app/page.js",
-  "/models/page": "app/models/page.js",
-  "/entities/[name]/page": "app/entities/[name]/page.js",
   "/api/graph/[slug]/route": "app/api/graph/[slug]/route.js"
 }
