@@ -423,6 +423,9 @@ export async function POST(request: NextRequest) {
       return name;
     }
 
+    const modelEntities: { id: string; name: string }[] = [];
+    let firstCompanyName: string | null = null;
+
     if (parsed.entities && Array.isArray(parsed.entities) && parsed.entities.length > 0) {
       for (const entity of parsed.entities) {
         if (!entity.name || typeof entity.name !== "string" || !entity.name.trim()) {
@@ -488,6 +491,13 @@ export async function POST(request: NextRequest) {
           entityId = newEntity.id;
         }
 
+        if (entity.type === "model") {
+          modelEntities.push({ id: entityId, name: entityName });
+        }
+        if (entity.type === "company" && !firstCompanyName) {
+          firstCompanyName = entityName;
+        }
+
         const { error: linkError } = await supabase
           .from("article_entities")
           .upsert(
@@ -499,6 +509,39 @@ export async function POST(request: NextRequest) {
           console.error("[ingest] Entity link failed:", entityName, linkError.message);
         } else {
           console.log("[ingest] Linked entity:", entityName);
+        }
+      }
+
+      if (firstCompanyName && modelEntities.length > 0) {
+        const companySlug = firstCompanyName
+          .toLowerCase()
+          .trim()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
+
+        const { data: companyEntity } = await supabase
+          .from("entities")
+          .select("id")
+          .eq("slug", companySlug)
+          .limit(1)
+          .single();
+
+        if (companyEntity) {
+          for (const model of modelEntities) {
+            const { error: parentError } = await supabase
+              .from("entities")
+              .update({ parent_id: companyEntity.id })
+              .eq("id", model.id)
+              .is("parent_id", null);
+
+            if (parentError) {
+              console.error(`[ingest] Parent link failed for ${model.name}:`, parentError.message);
+            } else {
+              console.log(`[ingest] Linked model ${model.name} to parent ${firstCompanyName}`);
+            }
+          }
         }
       }
     }
