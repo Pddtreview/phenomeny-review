@@ -503,6 +503,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    console.log(
+      "[ingest] timeline_event raw object:",
+      JSON.stringify(parsed.timeline_event, null, 2)
+    );
+    console.log(
+      "[ingest] raw event_type:",
+      parsed.timeline_event?.event_type
+    );
+
     const ALLOWED_EVENT_TYPES = [
       "release",
       "upgrade",
