@@ -2,6 +2,69 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { anthropicClient, ANTHROPIC_API_KEY } from "@/lib/anthropic";
 
+async function insertTimelineWithClaim(params: {
+  entityId: string;
+  title: string;
+  description: string;
+  eventDate: string;
+  eventType: string;
+  sourceUrl: string;
+  confidence: number;
+}) {
+  const { entityId, title, description, eventDate, eventType, sourceUrl, confidence } = params;
+
+  const { data: existing } = await supabase
+    .from("timelines")
+    .select("id")
+    .eq("entity", entityId)
+    .eq("event_type", eventType)
+    .eq("event_date", eventDate)
+    .eq("title", title)
+    .limit(1);
+
+  if (existing && existing.length > 0) {
+    console.log("[ingest] Duplicate timeline event, skipping:", title);
+    return { inserted: false, error: null };
+  }
+
+  const { error: timelineError } = await supabase
+    .from("timelines")
+    .insert({
+      entity: entityId,
+      title,
+      description,
+      event_date: eventDate,
+      event_type: eventType,
+      source_url: sourceUrl,
+      confidence,
+    });
+
+  if (timelineError) {
+    console.error("[ingest] Timeline insert failed:", timelineError.message);
+    return { inserted: false, error: timelineError };
+  }
+
+  const { error: claimErr } = await supabase
+    .from("claims")
+    .insert({
+      claim_type: "timeline",
+      subject_id: entityId,
+      structured_payload: { event_type: eventType, event_date: eventDate, title, description },
+      source_url: sourceUrl,
+      confidence,
+      revision: 1,
+      is_current: true,
+    });
+
+  if (claimErr) {
+    console.error("[ingest] Timeline claim insert failed:", claimErr.message);
+  } else {
+    console.log("[ingest] Timeline + claim created:", title);
+  }
+
+  return { inserted: true, error: null };
+}
+
 const SYSTEM_PROMPT = `
 You are an intelligence analysis engine.
 
@@ -546,21 +609,15 @@ export async function POST(request: NextRequest) {
           .limit(1);
 
         if (!existingTimeline || existingTimeline.length === 0) {
-          const { error: fallbackError } = await supabase
-            .from("timelines")
-            .insert({
-              entity: modelId,
-              event_type: "first_appearance",
-              event_date: new Date().toISOString(),
-              title: "First appearance in repository",
-              description: parsed.title || "",
-            });
-
-          if (fallbackError) {
-            console.error("[ingest] Fallback timeline insert failed for model", modelId, fallbackError.message);
-          } else {
-            console.log("[ingest] Fallback timeline created for model:", modelId);
-          }
+          await insertTimelineWithClaim({
+            entityId: modelId,
+            title: "First appearance in repository",
+            description: parsed.title || "",
+            eventDate: new Date().toISOString().slice(0, 10),
+            eventType: "first_appearance",
+            sourceUrl: url,
+            confidence: 0.7,
+          });
         }
       }
     }
@@ -876,21 +933,15 @@ ${parsed.content.slice(0, 3000)}`;
         .single();
 
       if (timelineEntity) {
-        const { error: timelineError } = await supabase
-          .from("timelines")
-          .insert({
-            entity: timelineEntity.id,
-            title: parsed.timeline_event.title,
-            description: parsed.timeline_event.description,
-            event_date: parsed.timeline_event.date,
-            event_type: eventType,
-            source_url: url,
-            confidence: 0.85,
-          });
-
-        if (timelineError) {
-          console.error("Timeline insert failed:", timelineError.message);
-        }
+        await insertTimelineWithClaim({
+          entityId: timelineEntity.id,
+          title: parsed.timeline_event.title,
+          description: parsed.timeline_event.description || "",
+          eventDate: parsed.timeline_event.date,
+          eventType: eventType,
+          sourceUrl: url,
+          confidence: 0.85,
+        });
       } else {
         console.warn("[ingest] Timeline entity not found in DB:", timelineEntityName);
       }
