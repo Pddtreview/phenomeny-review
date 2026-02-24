@@ -341,7 +341,10 @@ export async function POST(request: NextRequest) {
       "model",
       "country",
       "lab",
-      "regulator"
+      "regulator",
+      "person",
+      "institution",
+      "event"
     ];
 
     const GENERIC_ENTITY_BLOCKLIST = [
@@ -360,6 +363,35 @@ export async function POST(request: NextRequest) {
       "research",
       "institute"
     ];
+
+    const AI_CATEGORIES = ["AI", "AI Governance", "AI Operations"];
+    const AI_KEYWORDS = /\b(ai|artificial intelligence|model|research|regulation)\b/i;
+    const EVENT_KEYWORDS = /\b(ai|summit|expo|conference)\b/i;
+    const INSTITUTION_KEYWORDS = /\b(university|institute|lab|research)\b/i;
+    const REJECTED_PATTERNS = /\b(party|parties|wing|wings|venue|arena|stadium|hall|center|centre|convention center)\b/i;
+
+    function passesContextualFilter(entity: { name: string; type: string }, articleCategory: string, articleContent: string): boolean {
+      const nameLower = entity.name.trim().toLowerCase();
+
+      if (REJECTED_PATTERNS.test(nameLower)) {
+        return false;
+      }
+
+      if (entity.type === "person") {
+        if (!AI_CATEGORIES.includes(articleCategory)) return false;
+        if (!AI_KEYWORDS.test(articleContent)) return false;
+      }
+
+      if (entity.type === "event") {
+        if (!EVENT_KEYWORDS.test(nameLower)) return false;
+      }
+
+      if (entity.type === "institution") {
+        if (!INSTITUTION_KEYWORDS.test(nameLower)) return false;
+      }
+
+      return true;
+    }
 
     const CORPORATE_SUFFIXES = /\s+(Inc\.?|Corporation|Corp\.?|Ltd\.?|LLC|Plc|PLC)$/i;
 
@@ -392,6 +424,10 @@ export async function POST(request: NextRequest) {
         }
         if (GENERIC_ENTITY_BLOCKLIST.includes(entity.name.trim().toLowerCase())) {
           console.warn("[ingest] Entity rejected:", entity.name);
+          continue;
+        }
+        if (!passesContextualFilter(entity, parsed.category || "", parsed.content || "")) {
+          console.warn("[ingest] Rejected contextual entity:", entity.name);
           continue;
         }
 
