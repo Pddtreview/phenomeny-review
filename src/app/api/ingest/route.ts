@@ -280,6 +280,55 @@ export async function POST(request: NextRequest) {
 
     console.log("[ingest] Article inserted successfully, id:", articleData.id);
 
+    const VALID_ENTITY_TYPES = ["company", "model", "country", "lab", "regulator"];
+
+    if (parsed.entities && Array.isArray(parsed.entities) && parsed.entities.length > 0) {
+      for (const entity of parsed.entities) {
+        if (!entity.name || typeof entity.name !== "string" || !entity.name.trim()) continue;
+        if (!entity.type || !VALID_ENTITY_TYPES.includes(entity.type)) continue;
+
+        const entityName = entity.name.trim();
+
+        const { data: existingEntity } = await supabase
+          .from("entities")
+          .select("id")
+          .eq("name", entityName)
+          .limit(1)
+          .single();
+
+        let entityId: string;
+
+        if (existingEntity) {
+          entityId = existingEntity.id;
+        } else {
+          const { data: newEntity, error: insertEntityError } = await supabase
+            .from("entities")
+            .insert({ name: entityName, type: entity.type })
+            .select("id")
+            .single();
+
+          if (insertEntityError || !newEntity) {
+            console.error("[ingest] Entity insert failed:", entityName, insertEntityError?.message);
+            continue;
+          }
+          entityId = newEntity.id;
+        }
+
+        const { error: linkError } = await supabase
+          .from("article_entities")
+          .upsert(
+            { article_id: articleData.id, entity_id: entityId },
+            { onConflict: "article_id,entity_id" }
+          );
+
+        if (linkError) {
+          console.error("[ingest] Entity link failed:", entityName, linkError.message);
+        } else {
+          console.log("[ingest] Linked entity:", entityName);
+        }
+      }
+    }
+
     if (parsed.timeline_event && parsed.timeline_event.entity) {
       const { error: timelineError } = await supabase
         .from("timelines")
