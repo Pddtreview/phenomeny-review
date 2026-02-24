@@ -53,17 +53,13 @@ export default async function HomePage() {
     <main className={styles.main}>
       <header className={styles.header}>
         <Image
-          src="/images/logo.png"
-          alt="Phenomeny Review"
-          width={56}
-          height={56}
-          className={styles.logo}
+          src="/images/logo-full.png"
+          alt="Phenomeny Review™ — Tech Review & Intelligence"
+          width={320}
+          height={60}
+          className={styles.logoFull}
           priority
         />
-        <div>
-          <h1 className={styles.title}>Phenomeny Review™</h1>
-          <p className={styles.subtitle}>AI-Powered Editorial Intelligence</p>
-        </div>
       </header>
 
       <section className={styles.hero}>

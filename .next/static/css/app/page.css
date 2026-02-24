@@ -13,20 +13,14 @@
 .page_header__kVzhN {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: center;
   margin-bottom: 2.5rem;
 }
 
-.page_logo__7fc9l {
-  border-radius: 8px;
-}
-
-.page_title__3jonF {
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #1E0E6F;
-  line-height: 1.15;
+.page_logoFull__plWA3 {
+  height: auto;
+  max-width: 320px;
+  width: 100%;
 }
 
 .page_subtitle__iAJUg {
