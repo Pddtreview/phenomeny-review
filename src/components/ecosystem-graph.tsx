@@ -259,7 +259,39 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
                 style={{ transition: "opacity 0.15s" }}
               />
               {node.type === "company" && (
-                <text textAnchor="middle" dy={node.radius + 14} fill="#1E0E6F" fontSize="11" fontWeight="700">
+                <text
+                  textAnchor="middle"
+                  dy={node.radius + 15}
+                  fill="#1E0E6F"
+                  fontSize="12"
+                  fontWeight="800"
+                  opacity={0.8}
+                >
+                  {node.name}
+                </text>
+              )}
+              {node.type === "model" && (
+                <text
+                  textAnchor="middle"
+                  dy={node.radius + 12}
+                  fill="#374151"
+                  fontSize="9"
+                  fontWeight="600"
+                  opacity={hovered === null || isHovered || isConnected ? 0.8 : 0.25}
+                  style={{ transition: "opacity 0.15s" }}
+                >
+                  {node.name.length > 16 ? node.name.slice(0, 14) + "…" : node.name}
+                </text>
+              )}
+              {node.type === "related_company" && isHovered && (
+                <text
+                  textAnchor="middle"
+                  dy={node.radius + 12}
+                  fill="#0D9488"
+                  fontSize="9"
+                  fontWeight="600"
+                  opacity={0.8}
+                >
                   {node.name}
                 </text>
               )}
