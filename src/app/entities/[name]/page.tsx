@@ -175,6 +175,7 @@ export default async function EntityPage({ params }: EntityPageProps) {
 
   let crossCompanyExposure: { id: string; name: string; slug: string; frequency: number }[] = [];
   let modelGrowth: { year: string; count: number }[] = [];
+  let activityIntensity: { year: string; count: number }[] = [];
 
   if (isCompany && evolution.length > 0) {
     const modelIds = evolution.map((m: any) => m.id);
@@ -225,6 +226,24 @@ export default async function EntityPage({ params }: EntityPageProps) {
     modelGrowth = Object.entries(yearMap)
       .map(([year, ids]) => ({ year, count: ids.size }))
       .sort((a, b) => a.year.localeCompare(b.year));
+
+    const { data: activityRows } = await supabase
+      .from("timelines")
+      .select("event_date")
+      .in("entity", allEntityIds);
+
+    if (activityRows && activityRows.length > 0) {
+      const activityMap: Record<string, number> = {};
+      for (const row of activityRows) {
+        if (row.event_date) {
+          const yr = new Date(row.event_date).getFullYear().toString();
+          activityMap[yr] = (activityMap[yr] || 0) + 1;
+        }
+      }
+      activityIntensity = Object.entries(activityMap)
+        .map(([year, count]) => ({ year, count }))
+        .sort((a, b) => a.year.localeCompare(b.year));
+    }
   }
 
   if (isCompany) {
@@ -339,6 +358,29 @@ export default async function EntityPage({ params }: EntityPageProps) {
                     />
                   </div>
                   <span className={styles.growthCount}>{g.count}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+      })()}
+
+      {activityIntensity.length > 0 && (() => {
+        const maxEvents = Math.max(...activityIntensity.map(a => a.count));
+        return (
+          <section className={styles.activitySection}>
+            <h2 className={styles.sectionHeading}>Activity Intensity</h2>
+            <div className={styles.activityChart}>
+              {activityIntensity.map((a) => (
+                <div key={a.year} className={styles.activityRow}>
+                  <span className={styles.activityYear}>{a.year}</span>
+                  <div className={styles.activityBarTrack}>
+                    <div
+                      className={styles.activityBar}
+                      style={{ width: `${(a.count / maxEvents) * 100}%` }}
+                    />
+                  </div>
+                  <span className={styles.activityCount}>{a.count}</span>
                 </div>
               ))}
             </div>
