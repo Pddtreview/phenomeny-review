@@ -590,20 +590,40 @@ export async function POST(request: NextRequest) {
     if (parsed.timeline_event && parsed.timeline_event.entity) {
       const eventType = normalizeEventType(parsed.timeline_event.event_type);
 
-      const { error: timelineError } = await supabase
-        .from("timelines")
-        .insert({
-          entity: parsed.timeline_event.entity,
-          title: parsed.timeline_event.title,
-          description: parsed.timeline_event.description,
-          event_date: parsed.timeline_event.date,
-          event_type: eventType,
-          source_url: url,
-          confidence: 0.85,
-        });
+      const timelineEntityName = parsed.timeline_event.entity;
+      const timelineEntitySlug = timelineEntityName
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
 
-      if (timelineError) {
-        console.error("Timeline insert failed:", timelineError.message);
+      const { data: timelineEntity } = await supabase
+        .from("entities")
+        .select("id")
+        .eq("slug", timelineEntitySlug)
+        .limit(1)
+        .single();
+
+      if (timelineEntity) {
+        const { error: timelineError } = await supabase
+          .from("timelines")
+          .insert({
+            entity: timelineEntity.id,
+            title: parsed.timeline_event.title,
+            description: parsed.timeline_event.description,
+            event_date: parsed.timeline_event.date,
+            event_type: eventType,
+            source_url: url,
+            confidence: 0.85,
+          });
+
+        if (timelineError) {
+          console.error("Timeline insert failed:", timelineError.message);
+        }
+      } else {
+        console.warn("[ingest] Timeline entity not found in DB:", timelineEntityName);
       }
     }
 

@@ -66,11 +66,11 @@ async function getRelatedArticles(entityId: string) {
   return articles;
 }
 
-async function getTimelineEntries(entityName: string) {
+async function getTimelineEntries(entityId: string) {
   const { data, error } = await supabase
     .from("timelines")
     .select("*")
-    .eq("entity", entityName)
+    .eq("entity", entityId)
     .order("event_date", { ascending: false });
 
   if (error || !data) return [];
@@ -86,7 +86,7 @@ export default async function EntityPage({ params }: EntityPageProps) {
 
   const [articles, timeline] = await Promise.all([
     getRelatedArticles(entity.id),
-    getTimelineEntries(entity.name),
+    getTimelineEntries(entity.id),
   ]);
 
   const schemaTypeMap: Record<string, string> = {
