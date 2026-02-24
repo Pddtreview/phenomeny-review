@@ -79,8 +79,9 @@ next.config.mjs               - Next.js config (standalone output enabled)
 ## Database (Supabase)
 Articles table columns: id (uuid), title, content, slug, status (draft/published/scheduled), publish_at (timestamptz), source_url, created_at
 Timelines table columns: id (uuid), entity (text, NOT NULL), title, description, source_url, confidence (float), event_date (date), created_at
-Entity Relationships table columns: id (uuid), subject_id (uuid FK→entities), object_id (uuid FK→entities), predicate (text), source_url (text), confidence (float), created_at
+Entity Relationships table columns: id (uuid), subject_id (uuid FK→entities), object_id (uuid FK→entities), predicate (text), source_url (text), confidence (float), is_active (bool, default true), valid_from (date), valid_to (date), created_at, updated_at
   Allowed predicates: partnered_with, acquired, invested_in, competes_with, developed, regulates, funded_by, subsidiary_of, spun_off, collaborated_with, supplies_to, licensed_from
+  Temporal logic: New relationships deactivate prior same-subject+predicate rows (is_active=false, valid_to=today) before inserting
 Note: category column used in code but does not exist in the database schema (silently ignored on insert)
 
 ## Running
@@ -96,3 +97,5 @@ npm run start   # Production server on port 5000
 - 2026-02-23: Homepage redesign with purple/emerald brand, category filtering
 - 2026-02-23: Deployment fix — standalone output + dist/index.cjs entry point
 - 2026-02-24: Intelligence ingestion system — POST /api/ingest endpoint with URL fetch, HTML cleaning (cheerio), Anthropic structured extraction, dual insert (articles + timelines), source_url deduplication, admin UI integration
+- 2026-02-24: GET /api/graph/[slug] endpoint — entity graph data (relationships + timeline)
+- 2026-02-24: Temporal relationship logic — dedup, deactivation of superseded relationships (is_active, valid_from/to)

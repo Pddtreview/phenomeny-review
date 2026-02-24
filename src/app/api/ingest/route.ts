@@ -699,20 +699,44 @@ ${parsed.content.slice(0, 3000)}`;
                 const objectId = objectRes.data.id;
                 const confidence = typeof rel.confidence === "number" ? Math.min(1, Math.max(0, rel.confidence)) : 0.7;
 
-                const { data: existingRel } = await supabase
+                const { data: exactMatch } = await supabase
                   .from("entity_relationships")
                   .select("id")
                   .eq("subject_id", subjectId)
                   .eq("object_id", objectId)
                   .eq("predicate", rel.predicate)
-                  .eq("source_url", url)
+                  .eq("is_active", true)
                   .limit(1);
 
-                if (existingRel && existingRel.length > 0) {
-                  console.log("[ingest] Relationship already exists:", subjectName, rel.predicate, objectName);
+                if (exactMatch && exactMatch.length > 0) {
+                  console.log("[ingest] Active identical relationship exists:", subjectName, rel.predicate, objectName);
                   continue;
                 }
 
+                const { data: samePredicateRows } = await supabase
+                  .from("entity_relationships")
+                  .select("id")
+                  .eq("subject_id", subjectId)
+                  .eq("predicate", rel.predicate)
+                  .eq("is_active", true);
+
+                if (samePredicateRows && samePredicateRows.length > 0) {
+                  const idsToDeactivate = samePredicateRows.map((r) => r.id);
+                  const now = new Date().toISOString();
+                  const today = now.slice(0, 10);
+                  await supabase
+                    .from("entity_relationships")
+                    .update({
+                      is_active: false,
+                      valid_to: today,
+                      updated_at: now,
+                    })
+                    .in("id", idsToDeactivate);
+                  console.log("[ingest] Deactivated", idsToDeactivate.length, "prior relationship(s) for", subjectName, rel.predicate);
+                }
+
+                const nowInsert = new Date().toISOString();
+                const todayInsert = nowInsert.slice(0, 10);
                 const { error: relInsertError } = await supabase
                   .from("entity_relationships")
                   .insert({
@@ -721,6 +745,9 @@ ${parsed.content.slice(0, 3000)}`;
                     predicate: rel.predicate,
                     source_url: url,
                     confidence,
+                    is_active: true,
+                    valid_from: todayInsert,
+                    updated_at: nowInsert,
                   });
 
                 if (relInsertError) {

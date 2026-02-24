@@ -30,12 +30,14 @@ export async function GET(
   const [outRes, inRes, timelineRes] = await Promise.all([
     supabase
       .from("entity_relationships")
-      .select("id, subject_id, object_id, predicate, source_url, confidence, created_at")
-      .eq("subject_id", entity.id),
+      .select("id, subject_id, object_id, predicate, source_url, confidence, is_active, valid_from, valid_to, created_at, updated_at")
+      .eq("subject_id", entity.id)
+      .eq("is_active", true),
     supabase
       .from("entity_relationships")
-      .select("id, subject_id, object_id, predicate, source_url, confidence, created_at")
-      .eq("object_id", entity.id),
+      .select("id, subject_id, object_id, predicate, source_url, confidence, is_active, valid_from, valid_to, created_at, updated_at")
+      .eq("object_id", entity.id)
+      .eq("is_active", true),
     supabase
       .from("timelines")
       .select("id, title, description, event_date, event_type, source_url, confidence, created_at")
