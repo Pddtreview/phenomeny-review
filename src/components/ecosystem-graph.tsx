@@ -107,19 +107,20 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
     graphRef.current = graph;
     setReady(true);
 
-    let iteration = 0;
-    const maxIter = 250;
+    let alpha = 1.0;
+    const alphaDecay = 0.97;
+    const alphaMin = 0.005;
 
     const tick = () => {
       const ns = graph.nodes;
-      if (iteration >= maxIter) return;
+      if (alpha < alphaMin) return;
 
       for (let i = 0; i < ns.length; i++) {
         for (let j = i + 1; j < ns.length; j++) {
           const dx = ns[j].x - ns[i].x;
           const dy = ns[j].y - ns[i].y;
           const d = Math.sqrt(dx * dx + dy * dy) || 1;
-          const f = 2500 / (d * d);
+          const f = (2500 / (d * d)) * alpha;
           const fx = (dx / d) * f;
           const fy = (dy / d) * f;
           ns[i].vx -= fx; ns[i].vy -= fy;
@@ -134,12 +135,14 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
         const dy = t.y - s.y;
         const d = Math.sqrt(dx * dx + dy * dy) || 1;
         const ideal = t.type === "model" ? 120 : 190;
-        const f = (d - ideal) * 0.006;
+        const f = (d - ideal) * 0.006 * alpha;
         const fx = (dx / d) * f;
         const fy = (dy / d) * f;
         s.vx += fx; s.vy += fy;
         t.vx -= fx; t.vy -= fy;
       }
+
+      const damping = 0.85 + (1 - alpha) * 0.13;
 
       for (const n of ns) {
         if (n.type === "company") {
@@ -148,9 +151,9 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
           continue;
         }
 
-        n.vx += (cx - n.x) * 0.001;
-        n.vy += (cy - n.y) * 0.001;
-        n.vx *= 0.9; n.vy *= 0.9;
+        n.vx += (cx - n.x) * 0.001 * alpha;
+        n.vy += (cy - n.y) * 0.001 * alpha;
+        n.vx *= damping; n.vy *= damping;
         n.x += n.vx; n.y += n.vy;
 
         const dx = n.x - cx;
@@ -187,7 +190,7 @@ export default function EcosystemGraph({ company, models, relatedCompanies }: Ec
         }
       }
 
-      iteration++;
+      alpha *= alphaDecay;
       animRef.current = requestAnimationFrame(tick);
     };
 
