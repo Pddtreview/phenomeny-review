@@ -20,15 +20,16 @@
   gap: 0.25rem;
 }
 
-.brandName {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1E0E6F;
+.brandLogo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
 }
 
 .brandTagline {
   font-size: 0.8rem;
   color: #6B7280;
+  margin-top: 0.25rem;
 }
 
 .links {

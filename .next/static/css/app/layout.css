@@ -23,15 +23,16 @@
   gap: 0.25rem;
 }
 
-.footer_brandName__zZrYI {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1E0E6F;
+.footer_brandLogo__MlBUF {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
 }
 
 .footer_brandTagline__V4v5u {
   font-size: 0.8rem;
   color: #6B7280;
+  margin-top: 0.25rem;
 }
 
 .footer_links__YrPdW {
@@ -96,16 +97,19 @@
 }
 
 .header_logo__LJoqt {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1E0E6F;
+  display: flex;
+  align-items: center;
   text-decoration: none;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
 }
 
 .header_logo__LJoqt:hover {
   opacity: 0.85;
+}
+
+.header_logoImage__ElKNM {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
 }
 
 .header_nav__8A_Ry {

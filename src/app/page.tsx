@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import ArticleFeed from "@/components/article-feed";
@@ -204,17 +203,6 @@ export default async function HomePage() {
 
   return (
     <div className={styles.main}>
-      <header className={styles.header}>
-        <Image
-          src="/images/logo-full.png"
-          alt="Phenomeny Review™ — Tech Review & Intelligence"
-          width={320}
-          height={60}
-          className={styles.logoFull}
-          priority
-        />
-      </header>
-
       <section className={styles.hero}>
         <h2 className={styles.heroTitle}>
           The editorial lens on AI, quantum, space & geopolitics.

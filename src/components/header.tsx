@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./header.module.css";
 
 export default function Header() {
@@ -11,7 +12,14 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.headerInner}>
         <Link href="/" className={styles.logo}>
-          Phenomeny Review™
+          <Image
+            src="/images/logo-brand.png"
+            alt="Phenomeny Review™"
+            width={200}
+            height={40}
+            className={styles.logoImage}
+            priority
+          />
         </Link>
         <button
           className={styles.menuButton}

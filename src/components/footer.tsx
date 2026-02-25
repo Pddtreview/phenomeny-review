@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./footer.module.css";
 
 export default function Footer() {
@@ -6,7 +7,13 @@ export default function Footer() {
     <footer className={styles.footer}>
       <div className={styles.footerInner}>
         <div className={styles.brand}>
-          <span className={styles.brandName}>Phenomeny Review™</span>
+          <Image
+            src="/images/logo-brand.png"
+            alt="Phenomeny Review™"
+            width={180}
+            height={36}
+            className={styles.brandLogo}
+          />
           <span className={styles.brandTagline}>AI Evolution Repository</span>
         </div>
         <div className={styles.links}>

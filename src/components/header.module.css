@@ -21,16 +21,19 @@
 }
 
 .logo {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1E0E6F;
+  display: flex;
+  align-items: center;
   text-decoration: none;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
 }
 
 .logo:hover {
   opacity: 0.85;
+}
+
+.logoImage {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
 }
 
 .nav {
