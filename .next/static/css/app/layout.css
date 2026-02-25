@@ -2,9 +2,8 @@
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[3]!./src/components/footer.module.css ***!
   \****************************************************************************************************************************************************************************************************************************************************************************/
 .footer_footer__GoTLO {
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  background: #FAFAFA;
-  padding: 48px 24px;
+  background: #0F0B2E;
+  padding: 80px 24px;
 }
 
 .footer_footerInner__mDb5c {
@@ -20,30 +19,37 @@
 .footer_brand__K4Gvk {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.35rem;
 }
 
 .footer_brandLogo__MlBUF {
   height: 32px;
   width: auto;
   object-fit: contain;
+  filter: brightness(0) invert(1);
 }
 
 .footer_brandTagline__V4v5u {
-  font-size: 0.8rem;
-  color: #6B7280;
-  margin-top: 0.25rem;
+  font-size: 0.82rem;
+  color: #EAEAF2;
+  margin-top: 0.15rem;
+}
+
+.footer_brandMuted__kFKzK {
+  font-size: 0.72rem;
+  color: #7B7C94;
+  margin-top: 0.15rem;
 }
 
 .footer_links__YrPdW {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .footer_footerLink__aTNe5 {
   font-size: 0.82rem;
-  color: #1E0E6F;
+  color: #B8B9D0;
   text-decoration: none;
   transition: color 0.15s;
 }
@@ -55,15 +61,19 @@
 .footer_copyright__hfQeI {
   width: 100%;
   max-width: 1100px;
-  margin: 2rem auto 0;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  margin: 2.5rem auto 0;
+  padding: 24px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   text-align: center;
-  font-size: 0.75rem;
-  color: #9CA3AF;
+  font-size: 0.72rem;
+  color: #7B7C94;
 }
 
 @media (max-width: 640px) {
+  .footer_footer__GoTLO {
+    padding: 56px 24px;
+  }
+
   .footer_footerInner__mDb5c {
     flex-direction: column;
     gap: 1.5rem;
@@ -115,7 +125,7 @@
 .header_nav__8A_Ry {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .header_navLink__NEYGl {
@@ -200,9 +210,10 @@ body {
 }
 
 h1 {
-  font-size: 48px;
+  font-size: 56px;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   color: #1E0E6F;
 }
 

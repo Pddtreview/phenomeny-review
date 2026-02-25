@@ -1,0 +1,149 @@
+Do not modify backend, API routes, schema, ingestion, or graph logic.
+UI-only refinement.
+
+Goal: Upgrade visual authority to institutional archive standard.
+
+1️⃣ Footer Upgrade (Dark Institutional Style)
+
+Modify the Footer component:
+
+Background: deep navy/purple (#0F0B2E or #120A3A)
+
+Text color: #EAEAF2
+
+Link color: #B8B9D0
+
+Hover color: #19C39C
+
+Top border removed (use clean separation)
+
+Padding: 80px vertical
+
+Layout:
+
+Left column:
+Phenomeny Review™
+AI Evolution Repository
+Small muted line:
+Structured record of AI development.
+
+Right column:
+Companies → /companies
+Models → /models
+Timeline → /timeline
+Sitemap → /sitemap.xml
+
+Bottom centered line:
+© 2026 Phenomeny LLP™. All rights reserved.
+
+Add subtle divider above copyright:
+1px solid rgba(255,255,255,0.08)
+
+No gradients. No glow effects. Clean institutional tone.
+
+2️⃣ Hero Spacing & Typography Refinement
+
+Homepage:
+
+Increase vertical padding above and below hero block to 120px.
+
+H1 font-size: 56px
+
+Line-height: 1.2
+
+Letter-spacing: -0.02em
+
+Subheadline max-width: 720px
+
+Subheadline margin-top: 24px
+
+Subheadline opacity: 0.8
+
+Do not change wording.
+
+3️⃣ Section Spacing Standardization
+
+Across ALL pages:
+
+100px between major sections
+
+32px between section title and content
+
+24px between cards
+
+Max width: 1100px
+
+Ensure consistent H2 size (30px–32px)
+
+Apply consistently to:
+
+Homepage
+
+Companies
+
+Models
+
+Timeline
+
+Entity pages
+
+Article pages
+
+4️⃣ Header Refinement
+
+Keep current header but:
+
+Increase font-weight of nav links slightly (500)
+
+Increase spacing between nav items
+
+Add subtle bottom border: 1px solid rgba(0,0,0,0.05)
+
+Keep sticky
+
+Do NOT add:
+
+Ticker
+
+Live feed
+
+Secondary nav
+
+Extra buttons
+
+5️⃣ Remove Weak Visual Signals
+
+If any card shows:
+
+“0 models”
+
+“—”
+
+Empty metrics
+
+Replace with:
+“Tracked entity”
+
+Do not show meaningless zeros.
+
+6️⃣ Design Guardrails
+
+Do NOT:
+
+Add new components
+
+Add animations
+
+Add dashboard elements
+
+Add real-time UI
+
+Change color palette
+
+Introduce gradients
+
+Keep tone:
+Calm.
+Archival.
+Structured.
+Institutional.

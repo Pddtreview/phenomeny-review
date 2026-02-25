@@ -15,6 +15,7 @@ export default function Footer() {
             className={styles.brandLogo}
           />
           <span className={styles.brandTagline}>AI Evolution Repository</span>
+          <span className={styles.brandMuted}>Structured record of AI development.</span>
         </div>
         <div className={styles.links}>
           <Link href="/companies" className={styles.footerLink}>Companies</Link>
@@ -24,7 +25,7 @@ export default function Footer() {
         </div>
       </div>
       <div className={styles.copyright}>
-        © 2026 Phenomeny Review™
+        © 2026 Phenomeny LLP™. All rights reserved.
       </div>
     </footer>
   );

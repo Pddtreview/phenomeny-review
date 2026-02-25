@@ -145,22 +145,24 @@ export default async function CompaniesPage() {
               <h2 className={styles.cardName}>{c.name}</h2>
               <div className={styles.stats}>
                 <div className={styles.stat}>
-                  <span className={styles.statValue}>{c.modelCount}</span>
+                  <span className={styles.statValue}>{c.modelCount || "—"}</span>
                   <span className={styles.statLabel}>
-                    {c.modelCount === 1 ? "Model" : "Models"}
+                    {c.modelCount > 0
+                      ? c.modelCount === 1 ? "Model" : "Models"
+                      : "Tracked entity"}
                   </span>
                 </div>
                 <div className={styles.stat}>
                   <span className={styles.statValue}>
                     {c.firstModelYear ?? "—"}
                   </span>
-                  <span className={styles.statLabel}>First Year</span>
+                  <span className={styles.statLabel}>{c.firstModelYear ? "First Year" : "Tracked entity"}</span>
                 </div>
                 <div className={styles.stat}>
                   <span className={styles.statValue}>
                     {c.latestActivity ? formatDate(c.latestActivity) : "—"}
                   </span>
-                  <span className={styles.statLabel}>Latest Activity</span>
+                  <span className={styles.statLabel}>{c.latestActivity ? "Latest Activity" : "Tracked entity"}</span>
                 </div>
               </div>
             </Link>

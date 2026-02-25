@@ -30,22 +30,25 @@
 
 .page_hero__SKW6o {
   text-align: center;
-  max-width: 600px;
-  margin-bottom: 2rem;
+  max-width: 720px;
+  padding: 120px 0;
 }
 
 .page_heroTitle__Gfler {
-  font-size: 1.75rem;
+  font-size: 56px;
   font-weight: 700;
   color: #111827;
-  line-height: 1.3;
-  margin-bottom: 0.75rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .page_heroDescription__E0XDR {
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: #6B7280;
-  line-height: 1.6;
+  line-height: 1.7;
+  max-width: 720px;
+  margin-top: 24px;
+  opacity: 0.8;
 }
 
 .page_error__Jil8M {
@@ -64,22 +67,22 @@
 .page_timelineSection__PUJf_ {
   width: 100%;
   max-width: 780px;
-  margin-bottom: 2.5rem;
+  margin-bottom: 100px;
   text-align: center;
 }
 
 .page_timelineHeading__7ZsK7 {
-  font-size: 1.25rem;
+  font-size: 30px;
   font-weight: 700;
   color: #1E0E6F;
-  margin-bottom: 1rem;
+  margin-bottom: 32px;
 }
 
 .page_timelineGrid__BZtKK {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 1rem;
-  gap: 1rem;
+  grid-gap: 24px;
+  gap: 24px;
   margin-bottom: 0.75rem;
 }
 
@@ -139,20 +142,20 @@
 .page_exploreSection__NxSOX {
   width: 100%;
   max-width: 780px;
-  margin-bottom: 2rem;
+  margin-bottom: 100px;
 }
 
 .page_exploreHeading__OTDlh {
-  font-size: 1.1rem;
+  font-size: 30px;
   font-weight: 700;
   color: #1E0E6F;
-  margin-bottom: 0.75rem;
+  margin-bottom: 32px;
 }
 
 .page_exploreList__bXRc4 {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 24px;
   margin-bottom: 0.6rem;
 }
 

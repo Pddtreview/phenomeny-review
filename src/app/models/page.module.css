@@ -29,7 +29,7 @@
 .subheading {
   font-size: 0.875rem;
   color: #6B7280;
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
 }
 
 .empty {
@@ -42,7 +42,7 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.25rem;
+  gap: 24px;
 }
 
 .card {
@@ -116,10 +116,6 @@
 }
 
 @media (max-width: 600px) {
-  .main {
-    padding: 2rem 1rem 3rem;
-  }
-
   .grid {
     grid-template-columns: 1fr;
   }

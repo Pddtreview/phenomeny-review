@@ -254,7 +254,9 @@ export default async function HomePage() {
                   )}
                 </div>
                 <span className={styles.exploreBadge}>
-                  {c.modelCount} {c.modelCount === 1 ? "model" : "models"}
+                  {c.modelCount > 0
+                    ? `${c.modelCount} ${c.modelCount === 1 ? "model" : "models"}`
+                    : "Tracked entity"}
                 </span>
               </Link>
             ))}

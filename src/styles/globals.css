@@ -32,9 +32,10 @@ body {
 }
 
 h1 {
-  font-size: 48px;
+  font-size: 56px;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   color: #1E0E6F;
 }
 
