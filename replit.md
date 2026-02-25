@@ -1,7 +1,7 @@
 # Phenomeny Review™
 
 ## Overview
-AI-powered editorial platform built with Next.js 14 App Router. Features article management with scheduling, AI-powered editing tools (via Anthropic API), editorial categorization, and a branded purple/emerald design system.
+AI-powered editorial platform built with Next.js 14 App Router. Dual-mode architecture: News Mode (/) for editorial content and Archive Mode (/archive) for structured data exploration. Features article management with scheduling, AI-powered editing tools (via Anthropic API), editorial categorization, and a branded purple/emerald design system.
 
 ## Tech Stack
 - Next.js 14 with App Router (standalone output for deployment)
@@ -17,6 +17,9 @@ src/
     layout.tsx                - Root layout
     page.tsx                  - Homepage (server component, fetches published articles)
     page.module.css           - Homepage styles
+    archive/
+      page.tsx                - Archive Mode (dark theme, entity/timeline stats, ISR 300s)
+      archive.module.css      - Archive dark theme styles (#030508 bg, #00D296 accent)
     admin/
       page.tsx                - Admin dashboard (article create, AI tools, article list)
       page.module.css         - Admin styles
@@ -39,7 +42,7 @@ src/
     supabase.ts               - Supabase client
     anthropic.ts              - Anthropic API client (axios-based)
   components/
-    header.tsx                - Persistent sticky header with nav links
+    header.tsx                - Persistent sticky header with nav links + News/Archive mode toggle
     footer.tsx                - Site footer with brand + links
     article-feed.tsx          - Client component with category filtering
     subscribe-form.tsx        - Newsletter subscribe form
@@ -56,6 +59,7 @@ next.config.mjs               - Next.js config (standalone output enabled)
 - **AI Editing**: 6 actions (clarity, aggressive, analytical, summary, twitter, linkedin) via Anthropic Claude
 - **Categories**: AI, AI Governance, AI Operations, Quantum, Space, Biotech, India–China, USA Europe, Intelligence Brief
 - **Admin Auth**: Cookie-based (admin-auth cookie checked against ADMIN_SECRET env var)
+- **Dual-Mode Architecture**: News Mode (/) for editorial feed, Archive Mode (/archive) for dark-themed structured data exploration
 - **Homepage**: Category filter pills, article cards grid, subscribe section
 - **Intelligence Ingestion**: POST /api/ingest — URL fetch, HTML cleaning (cheerio), Anthropic structured extraction, dual insert into articles + timelines, source_url deduplication
 - **SEO**: Open Graph, Twitter cards, canonical URLs on article pages
@@ -64,6 +68,8 @@ next.config.mjs               - Next.js config (standalone output enabled)
 - Primary Purple: #1E0E6F
 - Emerald Accent: #19C39C
 - Background: #FAFAFA
+- Archive Background: #030508
+- Archive Accent: #00D296
 
 ## Environment Variables
 - `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
@@ -103,3 +109,4 @@ npm run start   # Production server on port 5000
 - 2026-02-24: Intelligence ingestion system — POST /api/ingest endpoint with URL fetch, HTML cleaning (cheerio), Anthropic structured extraction, dual insert (articles + timelines), source_url deduplication, admin UI integration
 - 2026-02-24: GET /api/graph/[slug] endpoint — entity graph data (relationships + timeline)
 - 2026-02-24: Temporal relationship logic — dedup, deactivation of superseded relationships (is_active, valid_from/to)
+- 2026-02-25: Dual-mode architecture — News Mode (/) + Archive Mode (/archive) with header mode toggle, dark archive theme, live Supabase stats

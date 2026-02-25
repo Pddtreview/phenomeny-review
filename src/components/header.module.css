@@ -39,11 +39,11 @@
 .nav {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .navLink {
-  font-size: 0.85rem;
+  font-size: 0.825rem;
   font-weight: 500;
   color: #1E0E6F;
   text-decoration: none;
@@ -52,6 +52,43 @@
 
 .navLink:hover {
   color: #19C39C;
+}
+
+.modeToggle {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-left: 0.75rem;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.modeButton {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 6px 14px;
+  text-decoration: none;
+  color: #6B7280;
+  background: transparent;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.modeButton:hover {
+  color: #1E0E6F;
+  background: rgba(30, 14, 111, 0.04);
+}
+
+.modeActive {
+  color: #FFFFFF;
+  background: #1E0E6F;
+}
+
+.modeActive:hover {
+  color: #FFFFFF;
+  background: #1E0E6F;
 }
 
 .menuButton {
@@ -63,7 +100,7 @@
   color: #1E0E6F;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .nav {
     display: none;
     position: absolute;
@@ -84,5 +121,10 @@
 
   .menuButton {
     display: block;
+  }
+
+  .modeToggle {
+    margin-left: 0;
+    margin-top: 0.5rem;
   }
 }

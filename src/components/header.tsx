@@ -3,10 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import styles from "./header.module.css";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const isArchive = pathname.startsWith("/archive");
 
   return (
     <header className={styles.header}>
@@ -25,6 +28,7 @@ export default function Header() {
           className={styles.menuButton}
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="Toggle navigation"
+          data-testid="button-menu-toggle"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             {menuOpen ? (
@@ -42,18 +46,40 @@ export default function Header() {
           </svg>
         </button>
         <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`}>
-          <Link href="/companies" className={styles.navLink} onClick={() => setMenuOpen(false)}>
+          <Link href="/companies" className={styles.navLink} onClick={() => setMenuOpen(false)} data-testid="link-companies">
             Companies
           </Link>
-          <Link href="/models" className={styles.navLink} onClick={() => setMenuOpen(false)}>
+          <Link href="/models" className={styles.navLink} onClick={() => setMenuOpen(false)} data-testid="link-models">
             Models
           </Link>
-          <Link href="/timeline" className={styles.navLink} onClick={() => setMenuOpen(false)}>
+          <Link href="/timeline" className={styles.navLink} onClick={() => setMenuOpen(false)} data-testid="link-timeline">
             Timeline
           </Link>
-          <Link href="/entities" className={styles.navLink} onClick={() => setMenuOpen(false)}>
-            Entities
+          <Link href="/#research" className={styles.navLink} onClick={() => setMenuOpen(false)} data-testid="link-research">
+            Research
           </Link>
+          <a href="#" className={styles.navLink} onClick={(e) => { e.preventDefault(); setMenuOpen(false); }} data-testid="link-search">
+            Search
+          </a>
+          <a href="#subscribe" className={styles.navLink} onClick={() => setMenuOpen(false)} data-testid="link-subscribe">
+            Subscribe
+          </a>
+          <div className={styles.modeToggle}>
+            <Link
+              href="/"
+              className={`${styles.modeButton} ${!isArchive ? styles.modeActive : ""}`}
+              data-testid="button-news-mode"
+            >
+              News Mode
+            </Link>
+            <Link
+              href="/archive"
+              className={`${styles.modeButton} ${isArchive ? styles.modeActive : ""}`}
+              data-testid="button-archive-mode"
+            >
+              Archive Mode
+            </Link>
+          </div>
         </nav>
       </div>
     </header>
