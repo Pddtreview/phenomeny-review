@@ -1,3 +1,5 @@
 {
+  "/archive/page": "app/archive/page.js",
+  "/sitemap.xml/[[...__metadata_id__]]/route": "app/sitemap.xml/[[...__metadata_id__]]/route.js",
   "/page": "app/page.js"
 }

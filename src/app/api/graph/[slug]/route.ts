@@ -65,12 +65,13 @@ export async function GET(
 
   if (allRels.length > 0) {
     claimFetches.push(
-      supabase
-        .from("claims")
-        .select("subject_id, object_id, predicate, revision, verification_status, confidence, created_at")
-        .eq("claim_type", "relationship")
-        .eq("is_current", true)
-        .then(({ data: claims }) => {
+      Promise.resolve(
+        supabase
+          .from("claims")
+          .select("subject_id, object_id, predicate, revision, verification_status, confidence, created_at")
+          .eq("claim_type", "relationship")
+          .eq("is_current", true)
+      ).then(({ data: claims }) => {
           if (claims) {
             for (const c of claims) {
               const key = `${c.subject_id}|${c.object_id}|${c.predicate}`;
@@ -88,13 +89,14 @@ export async function GET(
 
   if (timelineEvents.length > 0) {
     claimFetches.push(
-      supabase
-        .from("claims")
-        .select("subject_id, structured_payload, revision, verification_status, confidence, created_at")
-        .eq("claim_type", "timeline")
-        .eq("is_current", true)
-        .eq("subject_id", entity.id)
-        .then(({ data: claims }) => {
+      Promise.resolve(
+        supabase
+          .from("claims")
+          .select("subject_id, structured_payload, revision, verification_status, confidence, created_at")
+          .eq("claim_type", "timeline")
+          .eq("is_current", true)
+          .eq("subject_id", entity.id)
+      ).then(({ data: claims }) => {
           if (claims) {
             for (const c of claims) {
               const p = c.structured_payload as Record<string, string> | null;
