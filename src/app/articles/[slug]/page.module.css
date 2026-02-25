@@ -52,3 +52,21 @@
   color: #374151;
   white-space: pre-wrap;
 }
+
+.sourceLink {
+  margin-top: 40px;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.sourceLink a {
+  color: #1E0E6F;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(30, 14, 111, 0.3);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.sourceLink a:hover {
+  color: #19C39C;
+  border-bottom-color: #19C39C;
+}

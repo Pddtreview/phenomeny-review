@@ -21,6 +21,7 @@ interface Article {
   status: string;
   publish_at: string | null;
   category: string | null;
+  source_url: string | null;
   created_at: string;
 }
 
@@ -34,6 +35,7 @@ export default function EditArticlePage() {
   const [status, setStatus] = useState("draft");
   const [publishAt, setPublishAt] = useState("");
   const [category, setCategory] = useState("");
+  const [sourceUrl, setSourceUrl] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
@@ -52,6 +54,7 @@ export default function EditArticlePage() {
             setContent(article.content);
             setStatus(article.status);
             setCategory(article.category || "");
+            setSourceUrl(article.source_url || "");
             if (article.publish_at) {
               const dt = new Date(article.publish_at);
               const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
@@ -115,6 +118,7 @@ export default function EditArticlePage() {
           content,
           status,
           category: category || null,
+          source_url: sourceUrl || null,
           ...(status === "scheduled" && publishAt
             ? { publish_at: new Date(publishAt).toISOString() }
             : status === "published"
@@ -211,6 +215,19 @@ export default function EditArticlePage() {
             <option value="USA Europe">USA Europe</option>
             <option value="Intelligence Brief">Intelligence Brief</option>
           </select>
+        </div>
+
+        <div>
+          <label className={styles.label} htmlFor="sourceUrl">Source URL</label>
+          <input
+            id="sourceUrl"
+            className={styles.input}
+            type="text"
+            value={sourceUrl}
+            onChange={(e) => setSourceUrl(e.target.value)}
+            placeholder="https://..."
+            data-testid="input-source-url"
+          />
         </div>
 
         <div>

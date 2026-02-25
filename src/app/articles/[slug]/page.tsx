@@ -119,6 +119,18 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         className={styles.content}
         dangerouslySetInnerHTML={{ __html: linkedContent }}
       />
+      {article.source_url && (
+        <div className={styles.sourceLink} data-testid="text-source-url">
+          <strong>Source:</strong>{" "}
+          <a
+            href={article.source_url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View Original
+          </a>
+        </div>
+      )}
     </div>
   );
 }
