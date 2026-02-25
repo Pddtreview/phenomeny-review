@@ -256,7 +256,7 @@ export default function AdminPage() {
   const isBusy = generating || submitting || !!editing;
 
   return (
-    <main className={styles.main}>
+    <div className={styles.main}>
       <h1 className={styles.heading}>Admin Dashboard</h1>
 
       <div style={{ width: "100%", maxWidth: "600px", marginBottom: "1rem", textAlign: "right" }}>
@@ -493,6 +493,6 @@ export default function AdminPage() {
           </ul>
         )}
       </section>
-    </main>
+    </div>
   );
 }

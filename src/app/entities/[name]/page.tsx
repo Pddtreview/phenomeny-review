@@ -390,7 +390,7 @@ export default async function EntityPage({ params }: EntityPageProps) {
   };
 
   return (
-    <main className={styles.main}>
+    <div className={styles.main}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -699,6 +699,6 @@ export default async function EntityPage({ params }: EntityPageProps) {
           })()
         )}
       </section>
-    </main>
+    </div>
   );
 }

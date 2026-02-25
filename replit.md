@@ -39,6 +39,8 @@ src/
     supabase.ts               - Supabase client
     anthropic.ts              - Anthropic API client (axios-based)
   components/
+    header.tsx                - Persistent sticky header with nav links
+    footer.tsx                - Site footer with brand + links
     article-feed.tsx          - Client component with category filtering
     subscribe-form.tsx        - Newsletter subscribe form
   styles/

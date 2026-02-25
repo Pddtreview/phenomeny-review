@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className={styles.main}>
+    <div className={styles.main}>
       <h1 className={styles.heading}>Admin Login</h1>
       <form className={styles.form} onSubmit={handleSubmit}>
         <div>
@@ -57,6 +57,6 @@ export default function AdminLoginPage() {
           {submitting ? "Logging in…" : "Log in"}
         </button>
       </form>
-    </main>
+    </div>
   );
 }

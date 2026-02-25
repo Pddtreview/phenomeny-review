@@ -41,7 +41,7 @@ export default async function TimelineIndexPage() {
   const years = await getYears();
 
   return (
-    <main className={styles.main}>
+    <div className={styles.main}>
       <Link href="/" className={styles.back}>← Home</Link>
 
       <h1 className={styles.heading}>AI Industry Timeline</h1>
@@ -68,6 +68,6 @@ export default async function TimelineIndexPage() {
           ))}
         </div>
       )}
-    </main>
+    </div>
   );
 }

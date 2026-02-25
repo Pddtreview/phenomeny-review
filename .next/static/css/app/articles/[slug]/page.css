@@ -1,0 +1,58 @@
+/*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[3]!./src/app/articles/[slug]/page.module.css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************/
+.page_main__ZDhRC {
+  max-width: 660px;
+  margin: 0 auto;
+}
+
+.page_back__gSuIa {
+  display: inline-block;
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: #1E0E6F;
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: color 0.15s;
+}
+
+.page_back__gSuIa:hover {
+  color: #19C39C;
+}
+
+.page_category__qjvAB {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #19C39C;
+  background: rgba(25, 195, 156, 0.1);
+  padding: 0.2rem 0.7rem;
+  border-radius: 9999px;
+  margin-bottom: 0.75rem;
+}
+
+.page_title__00Vrd {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.page_date__HRHPz {
+  display: block;
+  font-size: 0.8rem;
+  color: #9CA3AF;
+  margin-bottom: 2rem;
+}
+
+.page_content__RNDYQ {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: #374151;
+  white-space: pre-wrap;
+}
+

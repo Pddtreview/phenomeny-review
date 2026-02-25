@@ -203,7 +203,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <main className={styles.main}>
+    <div className={styles.main}>
       <header className={styles.header}>
         <Image
           src="/images/logo-full.png"
@@ -322,6 +322,6 @@ export default async function HomePage() {
         <span className={styles.footerDot}>·</span>
         <span>All rights reserved</span>
       </footer>
-    </main>
+    </div>
   );
 }

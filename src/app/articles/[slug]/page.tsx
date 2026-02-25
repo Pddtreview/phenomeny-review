@@ -102,7 +102,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const linkedContent = linkEntitiesInContent(article.content, entities);
 
   return (
-    <main className={styles.main}>
+    <div className={styles.main}>
       <Link href="/" className={styles.back}>← Back to articles</Link>
       {article.category && (
         <span className={styles.category}>{article.category}</span>
@@ -119,6 +119,6 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         className={styles.content}
         dangerouslySetInnerHTML={{ __html: linkedContent }}
       />
-    </main>
+    </div>
   );
 }

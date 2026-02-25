@@ -123,7 +123,7 @@ export default async function ModelsPage() {
   };
 
   return (
-    <main className={styles.main}>
+    <div className={styles.main}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
@@ -180,6 +180,6 @@ export default async function ModelsPage() {
           ))}
         </div>
       )}
-    </main>
+    </div>
   );
 }

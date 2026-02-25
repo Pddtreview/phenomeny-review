@@ -1,0 +1,76 @@
+/*!****************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[3]!./src/app/entities/page.module.css ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************/
+.page_main__TKm32 {
+  max-width: 660px;
+  margin: 0 auto;
+}
+
+.page_back__RdvFj {
+  display: inline-block;
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: #1E0E6F;
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: color 0.15s;
+}
+
+.page_back__RdvFj:hover {
+  color: #19C39C;
+}
+
+.page_heading__aHnui {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #1E0E6F;
+  margin-bottom: 2rem;
+}
+
+.page_empty__5kKIt {
+  font-size: 0.875rem;
+  color: #9CA3AF;
+  font-style: italic;
+}
+
+.page_section__eH8UW {
+  margin-bottom: 2rem;
+}
+
+.page_typeHeading__Pm3y_ {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #19C39C;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid rgba(25, 195, 156, 0.2);
+}
+
+.page_entityList__e_fgK {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+}
+
+.page_entityItem__48Abw {
+  padding: 0;
+}
+
+.page_entityLink__4cYKR {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #111827;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.page_entityLink__4cYKR:hover {
+  color: #1E0E6F;
+}
+

@@ -14,6 +14,35 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: #111827;
   background: #FAFAFA;
+  min-height: 100vh;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.mainContent {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 24px 120px;
+}
+
+h1 {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #1E0E6F;
+}
+
+h2 {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #1E0E6F;
 }
 
 ::selection {

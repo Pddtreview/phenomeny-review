@@ -2,9 +2,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
-  padding: 2rem 1.5rem 3rem;
-  background: #FAFAFA;
 }
 
 .header {

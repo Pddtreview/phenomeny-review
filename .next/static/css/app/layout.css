@@ -1,3 +1,164 @@
+/*!****************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[3]!./src/components/footer.module.css ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************/
+.footer_footer__GoTLO {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  background: #FAFAFA;
+  padding: 48px 24px;
+}
+
+.footer_footerInner__mDb5c {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.footer_brand__K4Gvk {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.footer_brandName__zZrYI {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1E0E6F;
+}
+
+.footer_brandTagline__V4v5u {
+  font-size: 0.8rem;
+  color: #6B7280;
+}
+
+.footer_links__YrPdW {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer_footerLink__aTNe5 {
+  font-size: 0.82rem;
+  color: #1E0E6F;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer_footerLink__aTNe5:hover {
+  color: #19C39C;
+}
+
+.footer_copyright__hfQeI {
+  width: 100%;
+  max-width: 1100px;
+  margin: 2rem auto 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  text-align: center;
+  font-size: 0.75rem;
+  color: #9CA3AF;
+}
+
+@media (max-width: 640px) {
+  .footer_footerInner__mDb5c {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
+/*!****************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[3]!./src/components/header.module.css ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************/
+.header_header__RtJAw {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: #FFFFFF;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.header_headerInner__L14_o {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header_logo__LJoqt {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1E0E6F;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.header_logo__LJoqt:hover {
+  opacity: 0.85;
+}
+
+.header_nav__8A_Ry {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.header_navLink__NEYGl {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1E0E6F;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.header_navLink__NEYGl:hover {
+  color: #19C39C;
+}
+
+.header_menuButton__Bfh6R {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #1E0E6F;
+}
+
+@media (max-width: 640px) {
+  .header_nav__8A_Ry {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: #FFFFFF;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1rem 24px;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .header_navOpen__p6j9a {
+    display: flex;
+  }
+
+  .header_menuButton__Bfh6R {
+    display: block;
+  }
+}
+
 /*!********************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[3]!./src/styles/globals.css ***!
   \********************************************************************************************************************************************************************************************************************************************************************/
@@ -17,6 +178,35 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: #111827;
   background: #FAFAFA;
+  min-height: 100vh;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.mainContent {
+  flex: 1 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 24px 120px;
+}
+
+h1 {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #1E0E6F;
+}
+
+h2 {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #1E0E6F;
 }
 
 ::selection {

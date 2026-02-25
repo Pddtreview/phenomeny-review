@@ -142,14 +142,14 @@ export default function EditArticlePage() {
 
   if (loading) {
     return (
-      <main className={styles.main}>
+      <div className={styles.main}>
         <p className={styles.articlesEmpty}>Loading article…</p>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className={styles.main}>
+    <div className={styles.main}>
       <h1 className={styles.heading}>Edit Article</h1>
 
       <form className={styles.form} onSubmit={handleSubmit}>
@@ -246,6 +246,6 @@ export default function EditArticlePage() {
           {submitting ? "Saving…" : "Save Changes"}
         </button>
       </form>
-    </main>
+    </div>
   );
 }

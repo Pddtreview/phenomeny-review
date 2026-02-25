@@ -76,7 +76,7 @@ export default function AdminClaimsPage() {
   }
 
   return (
-    <main className={styles.main}>
+    <div className={styles.main}>
       <div className={styles.header}>
         <h1 className={styles.heading}>Claims Management</h1>
         <Link href="/admin" className={styles.backLink}>
@@ -181,6 +181,6 @@ export default function AdminClaimsPage() {
           </table>
         </div>
       )}
-    </main>
+    </div>
   );
 }

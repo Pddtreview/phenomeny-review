@@ -32,7 +32,7 @@ export default async function EntitiesPage() {
   });
 
   return (
-    <main className={styles.main}>
+    <div className={styles.main}>
       <Link href="/" className={styles.back}>← Home</Link>
 
       <h1 className={styles.heading}>Entities</h1>
@@ -55,6 +55,6 @@ export default async function EntitiesPage() {
           </section>
         ))
       )}
-    </main>
+    </div>
   );
 }
