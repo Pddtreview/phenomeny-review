@@ -6,9 +6,18 @@ import styles from "./archive.module.css";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Archive — The Complete Record | Phenomeny Review™",
+  title: "AI Evolution Archive — Phenomeny Review",
   description:
-    "The structured archive of AI development. Browse entities, timelines, and relationships across the complete record.",
+    "The complete structured record of artificial intelligence development. Every company, model, breakthrough and regulatory event from 1950 to today.",
+  alternates: {
+    canonical: "/archive",
+  },
+  openGraph: {
+    title: "AI Evolution Archive — Phenomeny Review",
+    description:
+      "The complete structured record of artificial intelligence development.",
+    type: "website",
+  },
 };
 
 interface YearGroup {
