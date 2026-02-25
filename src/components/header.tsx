@@ -10,6 +10,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const isArchive = pathname.startsWith("/archive");
+  const isNews = !isArchive;
 
   return (
     <header className={styles.header}>
@@ -67,7 +68,7 @@ export default function Header() {
           <div className={styles.modeToggle}>
             <Link
               href="/"
-              className={`${styles.modeButton} ${!isArchive ? styles.modeActive : ""}`}
+              className={`${styles.modeButton} ${isNews ? styles.modeActive : ""}`}
               data-testid="button-news-mode"
             >
               News Mode
